@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { AdminModule } from "./admin/admin.module";
+import { AnalyticsModule } from "./analytics/analytics.module";
 import { AuthModule } from "./auth/auth.module";
 import { CampaignsModule } from "./campaigns/campaigns.module";
 import { CommonModule } from "./common/common.module";
@@ -23,6 +24,7 @@ import { WalletsModule } from "./wallets/wallets.module";
     CampaignsModule,
     ReferralsModule,
     AdminModule,
+    AnalyticsModule,
   ],
 })
 export class AppModule {}

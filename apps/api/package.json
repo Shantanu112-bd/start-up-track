@@ -12,6 +12,9 @@
     "start": "node dist/main.js",
     "typecheck": "prisma generate && tsc --noEmit"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@cryptopay/sdk": "*",
     "@cryptopay/types": "*",
