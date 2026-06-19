@@ -12,6 +12,10 @@ COPY . .
 # --include=dev ensures Prisma and TypeScript are installed even if Railway sets NODE_ENV=production
 RUN npm install --include=dev
 
+# Make DATABASE_URL available at build time (prisma generate needs it to load config,
+# but does not actually connect to the database — a placeholder is sufficient)
+ARG DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
+
 # Generate Prisma client
 RUN cd apps/api && npx prisma generate
 
