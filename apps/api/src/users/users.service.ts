@@ -123,4 +123,40 @@ export class UsersService {
       where: { id },
     });
   }
+
+  async getAuditLog(userId: string, skip = 0, take = 50) {
+    const items = await this.prisma.adminLog.findMany({
+      where: { actorUserId: userId },
+      orderBy: { createdAt: "desc" },
+      skip: Number(skip) || 0,
+      take: Number(take) || 50,
+    });
+    const total = await this.prisma.adminLog.count({
+      where: { actorUserId: userId },
+    });
+    return { items, total };
+  }
+
+  async exportData(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        ownedBrands: true,
+        ownedMerchants: true,
+        wallets: true,
+      },
+    });
+    const transactions = await this.prisma.transaction.findMany({
+      where: { userId },
+    });
+    const auditLogs = await this.prisma.adminLog.findMany({
+      where: { actorUserId: userId },
+    });
+    return {
+      user,
+      transactions,
+      auditLogs,
+      exportedAt: new Date(),
+    };
+  }
 }

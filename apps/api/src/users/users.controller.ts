@@ -10,11 +10,14 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 
-import { ApiMockAuth } from "../common/decorators/api-auth-headers.decorator";
+import {
+  CurrentUser,
+  type AuthenticatedPrincipal,
+} from "../common/decorators/current-user.decorator";
 import { Roles } from "../common/decorators/roles.decorator";
-import { MockAuthGuard } from "../common/guards/mock-auth.guard";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { UserRole } from "../generated/prisma";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -23,11 +26,29 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { UsersService } from "./users.service";
 
 @ApiTags("Users")
-@ApiMockAuth()
-@UseGuards(MockAuthGuard, RolesGuard)
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller("users")
 export class UsersController {
   constructor(@Inject(UsersService) private readonly usersService: UsersService) {}
+
+  @Get("me/audit-log")
+  @ApiOperation({ summary: "Get audit log for the authenticated user." })
+  getAuditLog(@CurrentUser() principal: AuthenticatedPrincipal, @Query('skip') skip?: number, @Query('take') take?: number) {
+    return this.usersService.getAuditLog(principal.id, skip, take);
+  }
+
+  @Get("me/export")
+  @ApiOperation({ summary: "Export all user data." })
+  exportData(@CurrentUser() principal: AuthenticatedPrincipal) {
+    return this.usersService.exportData(principal.id);
+  }
+
+  @Delete("me")
+  @ApiOperation({ summary: "Soft delete the authenticated user account." })
+  deleteMe(@CurrentUser() principal: AuthenticatedPrincipal) {
+    return this.usersService.softDelete(principal.id);
+  }
 
   @Post()
   @Roles(UserRole.ADMIN)

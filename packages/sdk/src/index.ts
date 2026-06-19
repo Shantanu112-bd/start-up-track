@@ -65,9 +65,7 @@ export const cryptoPaySdk = new CryptoPaySdk({
   baseUrl: (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_API_URL 
     ? process.env.NEXT_PUBLIC_API_URL 
     : "http://localhost:4000") + "/api/v1",
-  defaultHeaders: {
-    "x-user-id": "00000000-0000-0000-0000-000000000001",
-  },
+  getToken: () => typeof window !== "undefined" ? localStorage.getItem("accessToken") : null,
 });
 
 // Also export raw classes if tree-shaking and custom instantiation is needed

@@ -27,6 +27,25 @@ export const useAppStore = create<AppState>((set) => ({
   currentUserId: "00000000-0000-0000-0000-000000000001",
   setCurrentUserId: (id) => set({ currentUserId: id }),
 
+  accessToken: typeof window !== "undefined" ? localStorage.getItem("accessToken") : null,
+  refreshToken: typeof window !== "undefined" ? localStorage.getItem("refreshToken") : null,
+
+  setTokens: (access, refresh) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("accessToken", access);
+      localStorage.setItem("refreshToken", refresh);
+    }
+    set({ accessToken: access, refreshToken: refresh });
+  },
+
+  clearTokens: () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+    }
+    set({ accessToken: null, refreshToken: null, currentUserId: null });
+  },
+
   isDemoMode: DEMO_MODE,
 
   tourStep: 0,

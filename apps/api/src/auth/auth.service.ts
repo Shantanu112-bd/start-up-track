@@ -1,4 +1,6 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import * as bcrypt from "bcryptjs";
 
 import { UserRole, UserStatus, WalletStatus } from "../generated/prisma";
 import { PrismaService } from "../prisma/prisma.service";
@@ -12,12 +14,19 @@ import type { AuthenticatedPrincipal } from "../common/decorators/current-user.d
 import type { MockLoginDto } from "./dto/mock-login.dto";
 import type { WalletChallengeDto } from "./dto/wallet-challenge.dto";
 import type { WalletLoginDto } from "./dto/wallet-login.dto";
+import type { RefreshDto } from "./dto/refresh.dto";
 
 @Injectable()
 export class AuthService {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async mockLogin(dto: MockLoginDto) {
+    if (process.env.NODE_ENV === "production") {
+      throw new BadRequestException("Mock login is disabled in production");
+    }
     const emailNormalized = normalizeEmail(dto.email);
     const phoneE164 = normalizePhone(dto.phoneE164);
 
@@ -58,8 +67,10 @@ export class AuthService {
             where: { id: existingUser.id },
           });
 
+    const { accessToken, refreshToken } = await this.generateTokens(user.id, user.role);
+
     return {
-      auth: this.toMockAuth(user.id),
+      auth: { accessToken, refreshToken },
       user,
     };
   }
@@ -102,8 +113,10 @@ export class AuthService {
         where: { id: wallet.id },
       });
 
+      const { accessToken, refreshToken } = await this.generateTokens(user.id, user.role);
+
       return {
-        auth: this.toMockAuth(user.id),
+        auth: { accessToken, refreshToken },
         user,
         wallet,
       };
@@ -133,10 +146,49 @@ export class AuthService {
       where: { userId: user.id },
     });
 
+    const { accessToken, refreshToken } = await this.generateTokens(user.id, user.role);
+
     return {
-      auth: this.toMockAuth(user.id),
+      auth: { accessToken, refreshToken },
       user,
       wallet: createdWallet,
+    };
+  }
+
+  async refreshToken(dto: RefreshDto) {
+    let decoded: any;
+    try {
+      decoded = this.jwtService.decode(dto.refreshToken);
+    } catch {
+      throw new BadRequestException("Invalid token format");
+    }
+
+    if (!decoded || !decoded.sub) {
+      throw new BadRequestException("Invalid token");
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: decoded.sub as string },
+    });
+
+    if (!user || !user.hashedRefreshToken) {
+      throw new BadRequestException("Invalid refresh token");
+    }
+
+    const isMatch = await bcrypt.compare(dto.refreshToken, user.hashedRefreshToken);
+    if (!isMatch) {
+      throw new BadRequestException("Invalid refresh token");
+    }
+
+    try {
+      this.jwtService.verify(dto.refreshToken, { secret: process.env.JWT_REFRESH_SECRET || "fallback_refresh_secret" });
+    } catch (err) {
+      throw new BadRequestException("Refresh token expired");
+    }
+
+    const { accessToken, refreshToken } = await this.generateTokens(user.id, user.role);
+    return {
+      auth: { accessToken, refreshToken },
     };
   }
 
@@ -149,11 +201,22 @@ export class AuthService {
     });
   }
 
-  private toMockAuth(userId: string) {
-    return {
-      header: "x-user-id",
-      scheme: "mock-header",
-      value: userId,
-    };
+  private async generateTokens(userId: string, role: UserRole) {
+    const payload = { sub: userId, role };
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET || "fallback_refresh_secret",
+      expiresIn: "30d",
+    });
+
+    const salt = await bcrypt.genSalt();
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, salt);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { hashedRefreshToken },
+    });
+
+    return { accessToken, refreshToken };
   }
 }

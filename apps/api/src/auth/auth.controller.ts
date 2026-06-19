@@ -1,30 +1,33 @@
 import { Body, Controller, Get, Inject, Post, UseGuards } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
 
-import { ApiMockAuth } from "../common/decorators/api-auth-headers.decorator";
 import {
   CurrentUser,
   type AuthenticatedPrincipal,
 } from "../common/decorators/current-user.decorator";
-import { MockAuthGuard } from "../common/guards/mock-auth.guard";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { AuthService } from "./auth.service";
 import { MockLoginDto } from "./dto/mock-login.dto";
 import { WalletChallengeDto } from "./dto/wallet-challenge.dto";
 import { WalletLoginDto } from "./dto/wallet-login.dto";
+import { RefreshDto } from "./dto/refresh.dto";
 
 @ApiTags("Auth")
 @Controller("auth")
 export class AuthController {
   constructor(@Inject(AuthService) private readonly authService: AuthService) {}
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post("mock-login")
   @ApiOperation({
-    summary: "Create or reuse a demo user and return the mock auth header.",
+    summary: "Create or reuse a demo user and return a JWT.",
   })
   mockLogin(@Body() dto: MockLoginDto) {
     return this.authService.mockLogin(dto);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post("wallet/challenge")
   @ApiOperation({ summary: "Generate a mock wallet login challenge." })
   walletChallenge(@Body() dto: WalletChallengeDto) {
@@ -39,10 +42,18 @@ export class AuthController {
     return this.authService.walletLogin(dto);
   }
 
+  @Post("refresh")
+  @ApiOperation({
+    summary: "Refresh JWT token.",
+  })
+  refresh(@Body() dto: RefreshDto) {
+    return this.authService.refreshToken(dto);
+  }
+
   @Get("me")
-  @UseGuards(MockAuthGuard)
-  @ApiMockAuth()
-  @ApiOperation({ summary: "Return the active mock-authenticated user." })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Return the active authenticated user." })
   me(@CurrentUser() principal: AuthenticatedPrincipal) {
     return this.authService.me(principal);
   }

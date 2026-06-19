@@ -146,6 +146,14 @@ enum OutboxStatus {
   FAILED
 }
 
+enum KycStatus {
+  NONE
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+
 model User {
   id              String     @id @default(uuid()) @db.Uuid
   email           String?    @db.VarChar(320)
@@ -155,8 +163,12 @@ model User {
   role            UserRole   @default(CONSUMER)
   status          UserStatus @default(PENDING_ONBOARDING)
   referralCode    String?    @unique @map("referral_code") @db.VarChar(32)
-  lastLoginAt     DateTime?  @map("last_login_at") @db.Timestamptz(6)
-  metadata        Json       @default("{}")
+  kycStatus          KycStatus  @default(NONE) @map("kyc_status")
+  kycReference       String?    @map("kyc_reference") @db.VarChar(128)
+  kycVerifiedAt      DateTime?  @map("kyc_verified_at") @db.Timestamptz(6)
+  lastLoginAt        DateTime?  @map("last_login_at") @db.Timestamptz(6)
+  hashedRefreshToken String?    @map("hashed_refresh_token")
+  metadata           Json       @default("{}")
   createdAt       DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt       DateTime?  @map("deleted_at") @db.Timestamptz(6)
