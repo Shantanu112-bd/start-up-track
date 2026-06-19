@@ -19,7 +19,10 @@ export class KycController {
       throw new UnauthorizedException("Missing signature");
     }
 
-    const secret = process.env.KYCAID_WEBHOOK_SECRET || "fallback_secret";
+    const secret = process.env.KYCAID_WEBHOOK_SECRET;
+    if (!secret) {
+      throw new UnauthorizedException("Webhook secret not configured");
+    }
     const expectedSignature = crypto
       .createHmac("sha256", secret)
       .update(JSON.stringify(payload))

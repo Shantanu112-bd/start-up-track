@@ -1,7 +1,13 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { Controller, Get, Query, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { AnalyticsService } from "./analytics.service";
 
-
+@ApiTags("Analytics")
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@Throttle({ default: { limit: 10, ttl: 60000 } })
 @Controller("analytics")
 export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}

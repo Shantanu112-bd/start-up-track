@@ -46,7 +46,7 @@ export class KycService {
 
       await tx.adminLog.create({
         data: {
-          actorUserId: user.id,
+          actorUserId: null,
           action: "KYC_STATUS_UPDATED",
           targetType: "USER",
           targetId: user.id,

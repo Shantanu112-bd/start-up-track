@@ -200,7 +200,7 @@ export class AnalyticsService {
       metrics.byReason[reward.reason as keyof typeof metrics.byReason] += amount;
 
       const date = new Date(reward.createdAt);
-      const monthStr = date.toLocaleString('default', { month: 'short' }); // e.g., 'Jan'
+      const monthStr = date.toISOString().substring(0, 7); // e.g., '2026-06'
       
       if (!seriesMap.has(monthStr)) {
         seriesMap.set(monthStr, 0);
@@ -208,10 +208,9 @@ export class AnalyticsService {
       seriesMap.set(monthStr, seriesMap.get(monthStr)! + amount);
     }
 
-    const monthOrder = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     metrics.timeSeries = Array.from(seriesMap.entries())
       .map(([month, earned]) => ({ month, earned }))
-      .sort((a, b) => monthOrder.indexOf(a.month) - monthOrder.indexOf(b.month));
+      .sort((a, b) => a.month.localeCompare(b.month));
 
     return metrics;
   }

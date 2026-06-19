@@ -146,11 +146,18 @@ export class UsersService {
         wallets: true,
       },
     });
+
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+
     const transactions = await this.prisma.transaction.findMany({
       where: { userId },
+      take: 1000,
     });
     const auditLogs = await this.prisma.adminLog.findMany({
       where: { actorUserId: userId },
+      take: 1000,
     });
     return {
       user,

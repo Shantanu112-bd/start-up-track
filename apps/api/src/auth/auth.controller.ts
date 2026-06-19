@@ -42,6 +42,7 @@ export class AuthController {
     return this.authService.walletLogin(dto);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post("refresh")
   @ApiOperation({
     summary: "Refresh JWT token.",
