@@ -9,6 +9,11 @@ const TOUR_STORAGE_KEY = "cryptopay_tour_complete";
 interface AppState {
   currentUserId: string | null;
   setCurrentUserId: (id: string | null) => void;
+  // Authentication tokens
+  accessToken: string | null;
+  refreshToken: string | null;
+  setTokens: (access: string, refresh: string) => void;
+  clearTokens: () => void;
   // Demo mode
   isDemoMode: boolean;
   // Tour state

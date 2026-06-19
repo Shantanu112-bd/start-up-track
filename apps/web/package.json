@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prebuild": "npx turbo run build --filter=@cryptopay/sdk --filter=@cryptopay/ui --filter=@cryptopay/types",
     "build": "next build --turbopack",
     "dev": "next dev --turbopack --port 3000",
     "lint": "eslint .",
