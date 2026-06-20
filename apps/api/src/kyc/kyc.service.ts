@@ -66,4 +66,48 @@ export class KycService {
 
     return { success: true };
   }
+
+  async createVerification(userId: string): Promise<{ verificationUrl: string }> {
+    const apiToken = process.env.KYCAID_API_TOKEN;
+    const formId = process.env.KYCAID_FORM_ID;
+
+    if (!apiToken || !formId) {
+      throw new Error('KYCAID not configured');
+    }
+
+    const response = await fetch('https://api.kycaid.com/applicants', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Token ${apiToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ type: 'PERSON', form_id: formId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`KYCAID error: ${response.statusText}`);
+    }
+
+    const data = await response.json() as { applicant_id: string; form_url: string };
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        kycReference: data.applicant_id,
+        kycStatus: KycStatus.PENDING,
+      },
+    });
+
+    await this.prisma.adminLog.create({
+      data: {
+        actorUserId: userId,
+        action: 'KYC_VERIFICATION_STARTED',
+        targetType: 'USER',
+        targetId: userId,
+        metadata: { applicantId: data.applicant_id } as any,
+      },
+    });
+
+    return { verificationUrl: data.form_url };
+  }
 }

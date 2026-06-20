@@ -1,8 +1,11 @@
-import { Body, Controller, Post, Headers, UnauthorizedException } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Post, Headers, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import * as crypto from "crypto";
 
 import { KycService } from "./kyc.service";
+import { CurrentUser, type AuthenticatedPrincipal } from "../common/decorators/current-user.decorator";
+import { MockAuthGuard } from "../common/guards/mock-auth.guard";
+import { ApiMockAuth } from "../common/decorators/api-auth-headers.decorator";
 
 @ApiTags("KYC")
 @Controller("kyc")
@@ -33,5 +36,13 @@ export class KycController {
     }
 
     return this.kycService.processWebhook(payload);
+  }
+
+  @Post("start")
+  @UseGuards(MockAuthGuard)
+  @ApiMockAuth()
+  @ApiOperation({ summary: "Start KYC verification" })
+  async startVerification(@CurrentUser() user: AuthenticatedPrincipal) {
+    return this.kycService.createVerification(user.id);
   }
 }

@@ -38,22 +38,45 @@ type Quote = {
   usdcAmount: string;
 };
 
-// NOTE: Real-time INR/Crypto rates require a licensed financial exchange partner.
-// These are estimated fallback rates.
-const ESTIMATED_INR_RATES: Record<AssetCode, number> = {
-  [AssetCode.BTC]: 9_000_000,
-  [AssetCode.ETH]: 300_000,
-  [AssetCode.INR]: 1,
-  [AssetCode.SOL]: 14_000,
-  [AssetCode.USDC]: 83,
-  [AssetCode.XLM]: 9,
-};
-
 @Injectable()
 export class TransactionsService {
+  private rateCache: Partial<Record<AssetCode, number>> = {};
+  private rateCacheTime = 0;
+
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
-  quote(dto: QuoteTransactionDto): Quote {
+  private async getLiveRates(): Promise<Record<AssetCode, number>> {
+    const now = Date.now();
+    if (now - this.rateCacheTime < 60_000 && Object.keys(this.rateCache).length > 0) {
+      return this.rateCache as Record<AssetCode, number>;
+    }
+
+    try {
+      const res = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=stellar,usd-coin,bitcoin,ethereum,solana&vs_currencies=inr'
+      );
+      const data = await res.json() as Record<string, { inr: number }>;
+
+      this.rateCache = {
+        [AssetCode.XLM]: data['stellar']?.inr || 9,
+        [AssetCode.USDC]: data['usd-coin']?.inr || 83,
+        [AssetCode.BTC]: data['bitcoin']?.inr || 9_000_000,
+        [AssetCode.ETH]: data['ethereum']?.inr || 300_000,
+        [AssetCode.SOL]: data['solana']?.inr || 14_000,
+        [AssetCode.INR]: 1,
+      };
+      this.rateCacheTime = now;
+    } catch {
+      // Fall back to last cached or static estimates
+      if (Object.keys(this.rateCache).length === 0) {
+        this.rateCache = { XLM: 9, USDC: 83, BTC: 9_000_000, ETH: 300_000, SOL: 14_000, INR: 1 } as any;
+      }
+    }
+
+    return this.rateCache as Record<AssetCode, number>;
+  }
+
+  async quote(dto: QuoteTransactionDto): Promise<Quote> {
     return this.createQuote(dto.assetIn, BigInt(dto.amountInPaise));
   }
 
@@ -94,7 +117,7 @@ export class TransactionsService {
       throw new BadRequestException("Merchant UPI VPA is required");
     }
 
-    const quote = this.createQuote(dto.assetIn, amountInPaise);
+    const quote = await this.createQuote(dto.assetIn, amountInPaise);
     const qrPayloadHash =
       dto.qrPayload === undefined ? qrCode?.qrPayloadHash : sha256Hex(dto.qrPayload);
 
@@ -247,15 +270,16 @@ export class TransactionsService {
     });
   }
 
-  private createQuote(assetIn: AssetCode, amountInPaise: bigint): Quote {
+  private async createQuote(assetIn: AssetCode, amountInPaise: bigint): Promise<Quote> {
     if (assetIn === AssetCode.INR) {
       throw new BadRequestException("assetIn must be a crypto asset");
     }
 
-    const rate = ESTIMATED_INR_RATES[assetIn];
+    const rates = await this.getLiveRates();
+    const rate = rates[assetIn];
     const amountInr = Number(amountInPaise) / 100;
     const amountInCrypto = amountInr / rate;
-    const usdcAmount = amountInr / ESTIMATED_INR_RATES[AssetCode.USDC];
+    const usdcAmount = amountInr / rates[AssetCode.USDC];
 
     return {
       amountInCrypto: amountInCrypto.toFixed(18),

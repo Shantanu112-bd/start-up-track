@@ -47,10 +47,11 @@ export class TransactionProcessorService {
 
       await this.updateStatus(tx.id, TransactionStatus.ROUTING_STELLAR);
 
-      const { hash } = await this.stellarService.submitPayment(
-        tx.publicId,
-        tx.amountInCrypto?.toString() || '0'
-      );
+      const { hash } = await this.stellarService.submitPayment({
+        transactionPublicId: tx.publicId,
+        assetCode: tx.assetIn,
+        amountCrypto: tx.amountInCrypto?.toString() || '0.0000001',
+      });
 
       await this.prisma.transaction.update({
         where: { id: tx.id },

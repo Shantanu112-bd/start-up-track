@@ -48,17 +48,7 @@ export class TransactionsController {
     return this.transactionsService.findOne(principal, id);
   }
 
-  @Post(":id/simulate")
-  @ApiOperation({
-    summary: "Run the mocked conversion, Stellar route, settlement, and reward.",
-  })
-  simulate(
-    @CurrentUser() principal: AuthenticatedPrincipal,
-    @Param("id") id: string,
-    @Body() dto: SimulateTransactionDto,
-  ) {
-    return this.transactionsService.simulate(principal, id, dto);
-  }
+
 
   @Post(":id/cancel")
   @ApiOperation({ summary: "Cancel a created transaction." })
