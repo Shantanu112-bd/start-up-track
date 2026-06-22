@@ -17,7 +17,7 @@ RUN npm install --include=dev
 ENV DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
 
 # Generate Prisma client
-RUN cd apps/api && npx prisma generate
+RUN cd apps/api && DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npx prisma generate
 
 # Build the API
 RUN npm run build --workspace=apps/api
