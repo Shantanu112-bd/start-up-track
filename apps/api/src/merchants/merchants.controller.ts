@@ -17,7 +17,7 @@ import {
   type AuthenticatedPrincipal,
 } from "../common/decorators/current-user.decorator";
 import { Roles } from "../common/decorators/roles.decorator";
-import { MockAuthGuard } from "../common/guards/mock-auth.guard";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { UserRole } from "../generated/prisma";
 import { CreateMerchantQrDto } from "./dto/create-merchant-qr.dto";
@@ -28,7 +28,7 @@ import { MerchantsService } from "./merchants.service";
 
 @ApiTags("Merchants")
 @ApiMockAuth()
-@UseGuards(MockAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller("merchants")
 export class MerchantsController {
   constructor(

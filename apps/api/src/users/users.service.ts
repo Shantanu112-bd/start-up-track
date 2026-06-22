@@ -69,13 +69,13 @@ export class UsersService {
   }
 
   findOne(id: string) {
-    return this.prisma.user.findUniqueOrThrow({
+    return this.prisma.user.findFirstOrThrow({
       include: {
         ownedBrands: true,
         ownedMerchants: true,
         wallets: true,
       },
-      where: { id },
+      where: { id, deletedAt: null },
     });
   }
 
@@ -138,8 +138,8 @@ export class UsersService {
   }
 
   async exportData(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId, deletedAt: null },
       include: {
         ownedBrands: true,
         ownedMerchants: true,

@@ -23,13 +23,13 @@ export class MockAuthGuard implements CanActivate {
       throw new UnauthorizedException("Missing x-user-id header");
     }
 
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       select: {
         id: true,
         role: true,
         status: true,
       },
-      where: { id: userId },
+      where: { id: userId, deletedAt: null },
     });
 
     if (user === null || user.status !== UserStatus.ACTIVE) {

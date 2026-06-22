@@ -4,7 +4,7 @@ import * as crypto from "crypto";
 
 import { KycService } from "./kyc.service";
 import { CurrentUser, type AuthenticatedPrincipal } from "../common/decorators/current-user.decorator";
-import { MockAuthGuard } from "../common/guards/mock-auth.guard";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { ApiMockAuth } from "../common/decorators/api-auth-headers.decorator";
 
 @ApiTags("KYC")
@@ -39,7 +39,7 @@ export class KycController {
   }
 
   @Post("start")
-  @UseGuards(MockAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiMockAuth()
   @ApiOperation({ summary: "Start KYC verification" })
   async startVerification(@CurrentUser() user: AuthenticatedPrincipal) {

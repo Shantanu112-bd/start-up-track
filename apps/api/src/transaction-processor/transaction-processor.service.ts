@@ -15,24 +15,43 @@ export class TransactionProcessorService {
 
   @Cron(CronExpression.EVERY_5_SECONDS)
   async handlePendingTransactions() {
-    const pendingTransactions = await this.prisma.transaction.findMany({
+    // Atomically claim one transaction at a time by updating status first
+    // Only process if we successfully moved it from CREATED to AUTHORIZED
+    const claimed = await this.prisma.transaction.updateMany({
       where: {
-        status: {
-          in: [TransactionStatus.CREATED, TransactionStatus.AUTHORIZED],
-        },
+        status: TransactionStatus.CREATED,
+        expiresAt: { gt: new Date() },
+      },
+      data: {
+        status: TransactionStatus.AUTHORIZED,
+        authorizedAt: new Date(),
       },
     });
 
-    for (const tx of pendingTransactions) {
-      if (tx.expiresAt && tx.expiresAt < new Date()) {
-        await this.updateStatus(tx.id, TransactionStatus.FAILED, 'EXPIRED', 'Transaction expired');
-        continue;
-      }
+    if (claimed.count === 0) return;
 
+    // Now fetch the transactions we just claimed
+    const transactions = await this.prisma.transaction.findMany({
+      where: {
+        status: TransactionStatus.AUTHORIZED,
+        authorizedAt: { gte: new Date(Date.now() - 6000) },
+      },
+      take: 10,
+    });
+
+    for (const tx of transactions) {
       try {
         await this.processTransaction(tx);
       } catch (error) {
         this.logger.error(`Failed to process transaction ${tx.id}`, error);
+        await this.prisma.transaction.update({
+          where: { id: tx.id },
+          data: {
+            status: TransactionStatus.FAILED,
+            failureCode: 'PROCESSOR_ERROR',
+            failureMessage: error instanceof Error ? error.message : 'Unknown error',
+          },
+        });
       }
     }
   }

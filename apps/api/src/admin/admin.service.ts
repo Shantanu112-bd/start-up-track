@@ -57,6 +57,7 @@ export class AdminService {
     const where: Prisma.UserWhereInput = {
       ...(query.role === undefined ? {} : { role: query.role }),
       ...(query.status === undefined ? {} : { status: query.status }),
+      deletedAt: null,
       ...(query.search === undefined
         ? {}
         : {
@@ -77,7 +78,7 @@ export class AdminService {
   }
 
   async updateUserStatus(actor: AuthenticatedPrincipal, userId: string, dto: UpdateUserStatusDto) {
-    const before = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    const before = await this.prisma.user.findFirstOrThrow({ where: { id: userId, deletedAt: null } });
     const after = await this.prisma.user.update({
       data: { status: dto.status },
       where: { id: userId },

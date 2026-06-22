@@ -36,6 +36,7 @@ export class AuthService {
 
     const existingUser = await this.prisma.user.findFirst({
       where: {
+        deletedAt: null,
         OR: [
           ...(emailNormalized === undefined ? [] : [{ emailNormalized }]),
           ...(phoneE164 === undefined ? [] : [{ phoneE164 }]),
@@ -167,8 +168,8 @@ export class AuthService {
       throw new BadRequestException("Invalid token");
     }
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: decoded.sub as string },
+    const user = await this.prisma.user.findFirst({
+      where: { id: decoded.sub as string, deletedAt: null },
     });
 
     if (!user || !user.hashedRefreshToken) {
@@ -193,11 +194,11 @@ export class AuthService {
   }
 
   async me(principal: AuthenticatedPrincipal) {
-    return this.prisma.user.findUniqueOrThrow({
+    return this.prisma.user.findFirstOrThrow({
       include: {
         wallets: true,
       },
-      where: { id: principal.id },
+      where: { id: principal.id, deletedAt: null },
     });
   }
 

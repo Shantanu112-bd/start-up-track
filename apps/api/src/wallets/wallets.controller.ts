@@ -17,7 +17,7 @@ import {
   CurrentUser,
   type AuthenticatedPrincipal,
 } from "../common/decorators/current-user.decorator";
-import { MockAuthGuard } from "../common/guards/mock-auth.guard";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { CreateWalletDto } from "./dto/create-wallet.dto";
 import { ListWalletsDto } from "./dto/list-wallets.dto";
 import { UpdateWalletDto } from "./dto/update-wallet.dto";
@@ -25,7 +25,7 @@ import { WalletsService } from "./wallets.service";
 
 @ApiTags("Wallets")
 @ApiMockAuth()
-@UseGuards(MockAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller("wallets")
 export class WalletsController {
   constructor(

@@ -6,7 +6,7 @@ import {
   CurrentUser,
   type AuthenticatedPrincipal,
 } from "../common/decorators/current-user.decorator";
-import { MockAuthGuard } from "../common/guards/mock-auth.guard";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { AcceptReferralDto } from "./dto/accept-referral.dto";
 import { CreateReferralDto } from "./dto/create-referral.dto";
 import { ListReferralsDto } from "./dto/list-referrals.dto";
@@ -15,7 +15,7 @@ import { ReferralsService } from "./referrals.service";
 
 @ApiTags("Referrals")
 @ApiMockAuth()
-@UseGuards(MockAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller("referrals")
 export class ReferralsController {
   constructor(

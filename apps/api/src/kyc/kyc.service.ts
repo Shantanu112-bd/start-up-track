@@ -20,7 +20,7 @@ export class KycService {
     }
 
     const user = await this.prisma.user.findFirst({
-      where: { kycReference: applicant_id },
+      where: { kycReference: applicant_id, deletedAt: null },
     });
 
     if (!user) {

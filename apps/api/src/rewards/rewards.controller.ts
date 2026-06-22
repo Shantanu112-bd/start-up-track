@@ -7,7 +7,7 @@ import {
   type AuthenticatedPrincipal,
 } from "../common/decorators/current-user.decorator";
 import { Roles } from "../common/decorators/roles.decorator";
-import { MockAuthGuard } from "../common/guards/mock-auth.guard";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { UserRole } from "../generated/prisma";
 import { CalculateSpendRewardDto } from "./dto/calculate-spend-reward.dto";
@@ -17,7 +17,7 @@ import { RewardsService } from "./rewards.service";
 
 @ApiTags("Rewards")
 @ApiMockAuth()
-@UseGuards(MockAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller("rewards")
 export class RewardsController {
   constructor(

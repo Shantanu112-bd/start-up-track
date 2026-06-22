@@ -17,7 +17,7 @@ import {
   type AuthenticatedPrincipal,
 } from "../common/decorators/current-user.decorator";
 import { Roles } from "../common/decorators/roles.decorator";
-import { MockAuthGuard } from "../common/guards/mock-auth.guard";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { ListRewardsDto } from "../rewards/dto/list-rewards.dto";
 import { ListTransactionsDto } from "../transactions/dto/list-transactions.dto";
@@ -31,7 +31,7 @@ import { UpdateUserStatusDto } from "./dto/update-user-status.dto";
 @ApiTags("Admin")
 @ApiMockAuth()
 @Roles(UserRole.ADMIN)
-@UseGuards(MockAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller("admin")
 export class AdminController {
   constructor(@Inject(AdminService) private readonly adminService: AdminService) {}

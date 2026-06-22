@@ -16,7 +16,7 @@ import {
   CurrentUser,
   type AuthenticatedPrincipal,
 } from "../common/decorators/current-user.decorator";
-import { MockAuthGuard } from "../common/guards/mock-auth.guard";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { CampaignStatus } from "../generated/prisma";
 import { CampaignsService } from "./campaigns.service";
 import { CreateBrandDto } from "./dto/create-brand.dto";
@@ -26,7 +26,7 @@ import { UpdateCampaignDto } from "./dto/update-campaign.dto";
 
 @ApiTags("Campaigns")
 @ApiMockAuth()
-@UseGuards(MockAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller("campaigns")
 export class CampaignsController {
   constructor(
