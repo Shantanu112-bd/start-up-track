@@ -1,6 +1,8 @@
 import { Module } from "@nestjs/common";
 import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
 import { APP_GUARD } from "@nestjs/core";
+import { LoggerModule } from 'nestjs-pino';
+import * as crypto from 'crypto';
 
 import { AdminModule } from "./admin/admin.module";
 import { AnalyticsModule } from "./analytics/analytics.module";
@@ -21,6 +23,16 @@ import { TransactionProcessorModule } from './transaction-processor/transaction-
 
 @Module({
   imports: [
+    LoggerModule.forRoot({
+      pinoHttp: {
+        genReqId: (req: any) => (req.headers['x-request-id'] as string) || crypto.randomUUID(),
+        transport: process.env.NODE_ENV !== 'production'
+          ? { target: 'pino-pretty', options: { colorize: true } }
+          : undefined,
+        redact: ['req.headers.authorization', 'req.body.password', 'req.body.phoneE164'],
+        level: process.env.LOG_LEVEL || 'info',
+      } as any,
+    }),
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([{
       ttl: 60000,

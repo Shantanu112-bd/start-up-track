@@ -4,6 +4,7 @@ import "reflect-metadata";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { Logger } from 'nestjs-pino';
 
 import { AppModule } from "./app.module";
 import { PrismaExceptionFilter } from "./common/filters/prisma-exception.filter";
@@ -11,6 +12,7 @@ import { JsonSerializationInterceptor } from "./common/interceptors/json-seriali
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useLogger(app.get(Logger));
   app.enableCors({
     credentials: true,
     origin: true,

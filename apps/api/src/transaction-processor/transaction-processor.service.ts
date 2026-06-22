@@ -40,19 +40,38 @@ export class TransactionProcessorService {
     });
 
     for (const tx of transactions) {
-      try {
-        await this.processTransaction(tx);
-      } catch (error) {
-        this.logger.error(`Failed to process transaction ${tx.id}`, error);
-        await this.prisma.transaction.update({
-          where: { id: tx.id },
-          data: {
-            status: TransactionStatus.FAILED,
-            failureCode: 'PROCESSOR_ERROR',
-            failureMessage: error instanceof Error ? error.message : 'Unknown error',
-          },
-        });
+      await this.processTransactionWithRetry(tx);
+    }
+  }
+  private async processTransactionWithRetry(tx: any, attempt = 1): Promise<void> {
+    const MAX_ATTEMPTS = 3;
+    const BACKOFF_MS = [0, 2000, 8000];
+
+    try {
+      await this.processTransaction(tx);
+    } catch (error: any) {
+      this.logger.warn(`Transaction ${tx.id} failed on attempt ${attempt}: ${error.message}`);
+
+      if (attempt < MAX_ATTEMPTS) {
+        const delay = BACKOFF_MS[attempt] || 8000;
+        this.logger.log(`Retrying transaction ${tx.id} in ${delay}ms (attempt ${attempt + 1}/${MAX_ATTEMPTS})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return this.processTransactionWithRetry(tx, attempt + 1);
       }
+
+      this.logger.error(`Transaction ${tx.id} permanently failed after ${MAX_ATTEMPTS} attempts`);
+      
+      const metadata = tx.metadata && typeof tx.metadata === 'object' ? tx.metadata : {};
+      
+      await this.prisma.transaction.update({
+        where: { id: tx.id },
+        data: {
+          status: TransactionStatus.FAILED,
+          failureCode: 'MAX_RETRIES_EXCEEDED',
+          failureMessage: `Failed after ${MAX_ATTEMPTS} attempts. Last error: ${error.message}`,
+          metadata: { ...metadata, retryAttempts: attempt },
+        },
+      });
     }
   }
 
