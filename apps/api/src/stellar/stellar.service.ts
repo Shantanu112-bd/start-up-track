@@ -20,9 +20,11 @@ export class StellarService {
   constructor() {
     const secretKey = process.env.PLATFORM_STELLAR_SECRET_KEY;
     if (!secretKey) {
-      throw new Error('PLATFORM_STELLAR_SECRET_KEY is not defined in environment variables');
+      this.logger.warn('PLATFORM_STELLAR_SECRET_KEY is not defined. Using a randomly generated keypair. Real transactions will fail!');
+      this.platformKeypair = Keypair.random();
+    } else {
+      this.platformKeypair = Keypair.fromSecret(secretKey);
     }
-    this.platformKeypair = Keypair.fromSecret(secretKey);
 
     const horizonUrl = process.env.STELLAR_HORIZON_URL || 'https://horizon-testnet.stellar.org';
     this.server = new Horizon.Server(horizonUrl);
