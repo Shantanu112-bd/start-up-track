@@ -14,15 +14,20 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useLogger(app.get(Logger));
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'https://start-up-track-web.vercel.app',
-      'https://start-up-track-admin.vercel.app',
-      ...(process.env.ALLOWED_ORIGINS
-        ? process.env.ALLOWED_ORIGINS.split(',')
-        : []),
-    ],
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
+      if (
+        origin === 'http://localhost:3000' ||
+        origin === 'http://localhost:3001' ||
+        origin.endsWith('.vercel.app') ||
+        allowedOrigins.includes(origin)
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
