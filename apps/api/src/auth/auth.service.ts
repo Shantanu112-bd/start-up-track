@@ -133,6 +133,20 @@ export class AuthService {
       
       const signatureBuffer = Buffer.from(dto.signature, 'base64');
       isValidSignature = keypair.verify(messageHash, signatureBuffer);
+      
+      if (!isValidSignature) {
+        // Fallback: Some clients sign the raw payload directly instead of the hash
+        isValidSignature = keypair.verify(payload, signatureBuffer);
+      }
+      
+      if (!isValidSignature) {
+        // Fallback 2: Verify without the Stellar Signed Message prefix at all
+        isValidSignature = keypair.verify(messageBytes, signatureBuffer);
+      }
+      
+      if (!isValidSignature) {
+         console.error(`Signature verification completely failed! Addr: ${dto.address}, sig base64: ${dto.signature}, sig bytes length: ${signatureBuffer.length}`);
+      }
     } catch (error: any) {
       throw new UnauthorizedException(`Invalid signature format: ${error.message} | sig length: ${dto.signature?.length}`);
     }
