@@ -1,5 +1,7 @@
 "use client";
 
+import { Buffer } from "buffer";
+
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import freighterApi from "@stellar/freighter-api";
 const { isConnected, requestAccess, getAddress } = freighterApi;
@@ -94,13 +96,20 @@ export function StellarWalletProvider({ children }: { children: React.ReactNode 
         address,
       });
 
+      let signatureBase64 = "";
+      if (typeof signResult.signedMessage === "string") {
+        signatureBase64 = signResult.signedMessage;
+      } else if (signResult.signedMessage) {
+        signatureBase64 = Buffer.from(signResult.signedMessage).toString("base64");
+      }
+
       // Step 3: Submit signed challenge to backend, get real JWT
       const loginResult = await cryptoPaySdk.auth.walletLogin({
         address,
         network: 'STELLAR',
         provider: 'FREIGHTER',
         nonce: challenge.nonce,
-        signature: signResult.signedMessage as string,
+        signature: signatureBase64,
       });
 
       // Step 4: Store real tokens
