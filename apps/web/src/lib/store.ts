@@ -11,6 +11,8 @@ interface AppState {
   currentUserId: string | null;
   currentUserDisplayName: string | null;
   setCurrentUser: (id: string | null, displayName?: string | null) => void;
+  merchantId: string | null;
+  setMerchantId: (id: string | null) => void;
   // Authentication tokens
   accessToken: string | null;
   refreshToken: string | null;
@@ -35,6 +37,8 @@ export const useAppStore = create<AppState>()(
       currentUserId: null,
       currentUserDisplayName: null,
       setCurrentUser: (id, displayName) => set({ currentUserId: id, currentUserDisplayName: displayName || null }),
+      merchantId: null,
+      setMerchantId: (id) => set({ merchantId: id }),
 
       accessToken: null,
       refreshToken: null,

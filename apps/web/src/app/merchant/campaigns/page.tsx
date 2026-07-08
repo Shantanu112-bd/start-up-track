@@ -19,14 +19,40 @@ function SectionTag({ label }: { label: string }) {
   );
 }
 
-const DEFAULT_MERCHANT_ID = "11111111-1111-1111-1111-111111111111";
+import { useMerchant } from "../../../hooks/useMerchant";
+
+function MerchantLoadingSkeleton() {
+  return (
+    <div className="space-y-4 p-8">
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+    </div>
+  );
+}
 
 export default function CampaignsPage() {
   const [activeTab, setActiveTab] = React.useState("ALL");
+  const { merchantId, isLoading: merchantLoading } = useMerchant();
+
   const { data: campaigns, isLoading } = useQuery({
-    queryKey: ["campaigns", DEFAULT_MERCHANT_ID],
+    queryKey: ["campaigns", merchantId],
     queryFn: () => cryptoPaySdk.campaigns.listCampaigns(),
+    enabled: !!merchantId,
   });
+
+  if (merchantLoading) return <MerchantLoadingSkeleton />;
+  if (!merchantId) return (
+    <div className="p-8 text-center">
+      <p className="font-mono text-sm text-muted">
+        No merchant account found.
+      </p>
+      <p className="font-mono text-xs text-muted mt-2">
+        Contact support to set up your merchant profile.
+      </p>
+    </div>
+  );
 
   const tabs = ["ALL", "Active", "Scheduled", "Completed"];
 

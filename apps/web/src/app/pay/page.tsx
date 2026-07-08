@@ -67,7 +67,7 @@ export default function PayPage() {
   const createTxMutation = useMutation({
     mutationFn: () => {
       const payload: any = {
-        merchantId: merchantId || "11111111-1111-1111-1111-111111111111",
+        merchantId: merchantId!,
         assetIn: selectedAsset,
         amountInPaise: amountPaise,
         merchantUpiVpa: scannedVpa,

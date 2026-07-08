@@ -10,13 +10,39 @@ import {
 } from "@cryptopay/ui";
 import { Search, Download, Filter } from "lucide-react";
 
-const DEFAULT_MERCHANT_ID = "11111111-1111-1111-1111-111111111111";
+import { useMerchant } from "../../../hooks/useMerchant";
+
+function MerchantLoadingSkeleton() {
+  return (
+    <div className="space-y-4 p-8">
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+    </div>
+  );
+}
 
 export default function MerchantTransactionsPage() {
+  const { merchantId, isLoading: merchantLoading } = useMerchant();
+
   const { data: transactions, isLoading } = useQuery({
-    queryKey: ["merchant-transactions-all", DEFAULT_MERCHANT_ID],
-    queryFn: () => cryptoPaySdk.merchants.getMerchantTransactions(DEFAULT_MERCHANT_ID, { limit: 20 }),
+    queryKey: ["merchant-transactions-all", merchantId],
+    queryFn: () => cryptoPaySdk.merchants.getMerchantTransactions(merchantId!, { limit: 20 }),
+    enabled: !!merchantId,
   });
+
+  if (merchantLoading) return <MerchantLoadingSkeleton />;
+  if (!merchantId) return (
+    <div className="p-8 text-center">
+      <p className="font-mono text-sm text-muted">
+        No merchant account found.
+      </p>
+      <p className="font-mono text-xs text-muted mt-2">
+        Contact support to set up your merchant profile.
+      </p>
+    </div>
+  );
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">

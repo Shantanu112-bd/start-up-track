@@ -6,11 +6,25 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cryptoPaySdk } from "@cryptopay/sdk";
 
-const DEFAULT_MERCHANT_ID = "11111111-1111-1111-1111-111111111111";
+import { useMerchant } from "../../../../hooks/useMerchant";
+import { Skeleton } from "@cryptopay/ui";
+
+function MerchantLoadingSkeleton() {
+  return (
+    <div className="space-y-4 p-8">
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+    </div>
+  );
+}
+
 const DEMO_BRAND_ID = "22222222-2222-2222-2222-222222222222"; // In a real app we'd fetch this
 
 export default function CreateCampaignPage() {
   const router = useRouter();
+  const { merchantId, isLoading: merchantLoading } = useMerchant();
   const [loading, setLoading] = React.useState(false);
   const [formData, setFormData] = React.useState({
     name: "",
@@ -45,6 +59,18 @@ export default function CreateCampaignPage() {
       setLoading(false);
     }
   };
+
+  if (merchantLoading) return <MerchantLoadingSkeleton />;
+  if (!merchantId) return (
+    <div className="p-8 text-center">
+      <p className="font-mono text-sm text-muted">
+        No merchant account found.
+      </p>
+      <p className="font-mono text-xs text-muted mt-2">
+        Contact support to set up your merchant profile.
+      </p>
+    </div>
+  );
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 max-w-3xl mx-auto">

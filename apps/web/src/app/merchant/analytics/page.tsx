@@ -18,14 +18,40 @@ function SectionTag({ label }: { label: string }) {
   );
 }
 
-const DEFAULT_MERCHANT_ID = "11111111-1111-1111-1111-111111111111";
+import { useMerchant } from "../../../hooks/useMerchant";
+
+function MerchantLoadingSkeleton() {
+  return (
+    <div className="space-y-4 p-8">
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+      <Skeleton className="h-24 w-full rounded-[12px]" />
+    </div>
+  );
+}
 
 export default function AnalyticsPage() {
   const [period, setPeriod] = React.useState("30d");
+  const { merchantId, isLoading: merchantLoading } = useMerchant();
+
   const { data: analytics, isLoading } = useQuery({
-    queryKey: ["merchant-analytics", DEFAULT_MERCHANT_ID, period],
-    queryFn: () => cryptoPaySdk.analytics.getDashboardMetrics(DEFAULT_MERCHANT_ID),
+    queryKey: ["merchant-analytics", merchantId, period],
+    queryFn: () => cryptoPaySdk.analytics.getDashboardMetrics(merchantId!),
+    enabled: !!merchantId,
   });
+
+  if (merchantLoading) return <MerchantLoadingSkeleton />;
+  if (!merchantId) return (
+    <div className="p-8 text-center">
+      <p className="font-mono text-sm text-muted">
+        No merchant account found.
+      </p>
+      <p className="font-mono text-xs text-muted mt-2">
+        Contact support to set up your merchant profile.
+      </p>
+    </div>
+  );
 
   return (
     <motion.div 

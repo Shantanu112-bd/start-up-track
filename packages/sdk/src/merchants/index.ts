@@ -8,6 +8,10 @@ export class MerchantsSdk {
     return this.client.get<Merchant>(`/merchants/${merchantId}`);
   }
 
+  async getMyMerchant(): Promise<Merchant> {
+    return this.client.get<Merchant>('/merchants/mine');
+  }
+
   async findByVpa(vpa: string): Promise<Merchant | null> {
     return this.client.get<Merchant | null>(`/merchants/by-vpa/${vpa}`);
   }

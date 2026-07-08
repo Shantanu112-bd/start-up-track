@@ -208,6 +208,15 @@ export class MerchantsService {
     return merchant;
   }
 
+  async findByOwner(ownerUserId: string) {
+    return this.prisma.merchant.findFirst({
+      where: {
+        ownerUserId,
+        status: MerchantStatus.APPROVED,
+      },
+    });
+  }
+
   private assertMerchantAccess(owner: AuthenticatedPrincipal, merchant: Merchant) {
     if (owner.role === UserRole.ADMIN || merchant.ownerUserId === owner.id) {
       return;

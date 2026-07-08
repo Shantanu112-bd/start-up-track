@@ -56,6 +56,12 @@ export class MerchantsController {
     return this.merchantsService.findByUpiVpa(vpa);
   }
 
+  @Get("mine")
+  @ApiOperation({ summary: "Get my merchant profile." })
+  async getMyMerchant(@CurrentUser() user: AuthenticatedPrincipal) {
+    return this.merchantsService.findByOwner(user.id);
+  }
+
   @Get(":id")
   @ApiOperation({ summary: "Get merchant details and QR codes." })
   findOne(@CurrentUser() principal: AuthenticatedPrincipal, @Param("id") id: string) {
