@@ -6,6 +6,10 @@ import { queryClient } from "../../lib/query-client";
 import { initializeSdk } from "@cryptopay/sdk";
 import { StellarWalletProvider } from "./StellarWalletProvider";
 import { AppLock } from "../auth/AppLock";
+import { KycOnboarding } from "../kyc/KycOnboarding";
+import { KycPending } from "../kyc/KycPending";
+import { useQuery } from "@tanstack/react-query";
+import { cryptoPaySdk } from "@cryptopay/sdk";
 
 import { useAppStore } from "../../lib/store";
 
@@ -37,16 +41,42 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 
 function AppLockWrapper({ children }: { children: React.ReactNode }) {
-  const { isAppUnlocked, accessToken } = useAppStore();
+  const { 
+    isAppUnlocked, 
+    accessToken, 
+    kycStatus,
+    setKycStatus 
+  } = useAppStore();
 
-  if (!accessToken) {
-    // Not logged in — show wallet connect, not lock screen
-    return <>{children}</>;
-  }
+  // Fetch real KYC status on every authenticated load
+  const { data: me } = useQuery({
+    queryKey: ['me', accessToken],
+    queryFn: () => cryptoPaySdk.auth.getCurrentUser(),
+    enabled: !!accessToken,
+  });
 
-  if (!isAppUnlocked) {
-    return <AppLock />;
-  }
+  React.useEffect(() => {
+    if (me?.kycStatus) {
+      setKycStatus(me.kycStatus);
+    }
+  }, [me, setKycStatus]);
 
+  // Not logged in — show connect wallet flow
+  if (!accessToken) return <>{children}</>;
+
+  // Logged in but app locked — show biometric/PIN
+  if (!isAppUnlocked) return <AppLock />;
+
+  // Logged in, unlocked, but KYC not done
+  const kycRequired = !kycStatus || 
+    kycStatus === 'NOT_STARTED' || 
+    kycStatus === 'REJECTED';
+  const kycPending = kycStatus === 'PENDING' || 
+    kycStatus === 'IN_REVIEW';
+
+  if (kycRequired) return <KycOnboarding />;
+  if (kycPending) return <KycPending />;
+
+  // All checks passed — show app
   return <>{children}</>;
 }

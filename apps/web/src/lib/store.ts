@@ -32,6 +32,9 @@ interface AppState {
   // Auth Lock state
   isAppUnlocked: boolean;
   setAppUnlocked: (unlocked: boolean) => void;
+  // KYC state
+  kycStatus: string | null;
+  setKycStatus: (status: string | null) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -87,6 +90,9 @@ export const useAppStore = create<AppState>()(
 
   isAppUnlocked: false,
   setAppUnlocked: (unlocked) => set({ isAppUnlocked: unlocked }),
+
+  kycStatus: null,
+  setKycStatus: (status) => set({ kycStatus: status }),
     }),
     {
       name: "payra-auth-storage",
@@ -95,6 +101,7 @@ export const useAppStore = create<AppState>()(
         refreshToken: state.refreshToken,
         currentUserId: state.currentUserId,
         currentUserDisplayName: state.currentUserDisplayName,
+        kycStatus: state.kycStatus,
       }),
     }
   )

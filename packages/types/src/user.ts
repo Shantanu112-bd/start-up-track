@@ -14,4 +14,5 @@ export interface User {
   createdAt: Date | string;
   updatedAt: Date | string;
   deletedAt: Date | string | null;
+  kycStatus?: string;
 }

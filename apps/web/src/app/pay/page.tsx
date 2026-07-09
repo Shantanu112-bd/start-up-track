@@ -3,12 +3,14 @@
 import * as React from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { cryptoPaySdk } from "@cryptopay/sdk";
-import { ArrowLeft, Copy, ExternalLink, X, Square, Minus } from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, X, Square, Minus, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { parseUpiQr, isUpiVpa } from "../../lib/upi-parser";
 import { getWalletBalances } from "../../lib/horizon";
 import { getAddress } from "@stellar/freighter-api";
+import { useAppStore } from "../../lib/store";
 import dynamic from "next/dynamic";
 
 const QrScanner = dynamic(
@@ -38,6 +40,9 @@ export default function PayPage() {
   const [txStatus, setTxStatus] = React.useState<string>("");
 
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const { kycStatus } = useAppStore()
+  const isKycVerified = kycStatus === 'APPROVED' || kycStatus === 'VERIFIED'
 
   React.useEffect(() => {
     if (showManualInput && inputRef.current) {
@@ -161,6 +166,27 @@ export default function PayPage() {
   };
 
   const processingStepIndex = txStatus === "ROUTING_STELLAR" ? 0 : txStatus === "SETTLING" ? 1 : txStatus === "REWARDING" || txStatus === "COMPLETED" ? 2 : 0;
+
+  if (step === "SCAN" && !isKycVerified) {
+    return (
+      <div className="flex flex-col items-center justify-center 
+                      min-h-screen p-8 text-center bg-page text-black">
+        <ShieldCheck className="w-16 h-16 mb-6" />
+        <h2 className="font-mono text-xl font-bold mb-3">
+          Verification required
+        </h2>
+        <p className="text-sm text-gray-500 mb-6 max-w-xs">
+          Complete identity verification in your profile
+          before making payments.
+        </p>
+        <Link href="/profile/trust">
+          <button className="bg-black text-white font-bold px-8 py-3 rounded-full">
+            GO TO VERIFICATION →
+          </button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <>

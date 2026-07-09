@@ -10,6 +10,7 @@ import { ReferralsSdk } from "./referrals";
 import { AnalyticsSdk } from "./analytics";
 import { AdminSdk } from "./admin";
 import { RampsClient } from "./ramps";
+import { KycClient } from "./kyc";
 
 export { ApiClient, type ApiClientConfig } from "./core/ApiClient";
 export { ApiError } from "./core/ApiError";
@@ -26,6 +27,7 @@ export class CryptoPaySdk {
   public analytics: AnalyticsSdk;
   public admin: AdminSdk;
   public ramps: RampsClient;
+  public kyc: KycClient;
 
   private client: ApiClient;
 
@@ -43,6 +45,7 @@ export class CryptoPaySdk {
     this.analytics = new AnalyticsSdk(this.client);
     this.admin = new AdminSdk(this.client);
     this.ramps = new RampsClient(this.client);
+    this.kyc = new KycClient(this.client);
   }
 }
 
@@ -102,4 +105,5 @@ export {
   AnalyticsSdk,
   AdminSdk,
   RampsClient,
+  KycClient,
 };
