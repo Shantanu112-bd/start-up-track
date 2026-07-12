@@ -2,10 +2,12 @@ node_modules
 .next
 dist
 .git
-*.md
+.log
 apps/web
 apps/admin
 contracts
 .env
 .env.local
-*.env
+.env.local
+coverage
+*.md
