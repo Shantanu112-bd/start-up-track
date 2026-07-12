@@ -20,6 +20,8 @@ async function bootstrap() {
       if (
         origin === 'http://localhost:3000' ||
         origin === 'http://localhost:3001' ||
+        origin === 'https://start-up-track-web.vercel.app' ||
+        origin === 'https://start-up-track.onrender.com' ||
         origin.endsWith('.vercel.app') ||
         allowedOrigins.includes(origin)
       ) {
