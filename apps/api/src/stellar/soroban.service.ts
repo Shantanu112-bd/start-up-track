@@ -248,9 +248,11 @@ export class SorobanService {
     const contract = new Contract(this.paymentEngineId)
 
     const paymentIdBytes = this.uuidToBytes32(params.paymentId)
+    const payerBytes = this.uuidToBytes32(params.payer)
     const merchantIdBytes = this.uuidToBytes32(params.merchantId)
     const qrHashBytes = this.uuidToBytes32(params.qrHash)
     const rewardIdBytes = this.uuidToBytes32(params.rewardId)
+    const operatorAddress = this.platformKeypair.publicKey()
 
     const assetMap: Record<string, number> = {
       ETH: 1,
@@ -267,6 +269,8 @@ export class SorobanService {
       .addOperation(
         contract.call(
           'create_payment',
+          nativeToScVal(operatorAddress, { type: 'address' }),
+          nativeToScVal(Address.fromString(params.payer), { type: 'address' }),
           nativeToScVal(paymentIdBytes, { type: 'bytes' }),
           nativeToScVal(merchantIdBytes, { type: 'bytes' }),
           nativeToScVal(assetMap[params.asset], { type: 'u32' }),

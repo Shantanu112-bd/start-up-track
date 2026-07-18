@@ -186,6 +186,19 @@ export class TransactionsService {
       },
     })
 
+    // Create spend reward for the transaction
+    const starAmount = calculateSpendRewardStar(amountInPaise);
+    await this.prisma.reward.create({
+      data: {
+        userId: owner.id,
+        transactionId: newTransaction.id,
+        reason: RewardReason.SPEND,
+        starAmount,
+        formulaVersion: 'STAR_SPEND_V1',
+        status: RewardStatus.PENDING,
+      },
+    });
+
     return newTransaction;
   }
 

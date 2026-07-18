@@ -71,6 +71,23 @@ export class KycService {
     return { success: true };
   }
 
+  async getStatus(userId: string): Promise<{ kycStatus: KycStatus; kycReference: string | null; kycVerifiedAt: Date | null }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { kycStatus: true, kycReference: true, kycVerifiedAt: true },
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return {
+      kycStatus: user.kycStatus,
+      kycReference: user.kycReference,
+      kycVerifiedAt: user.kycVerifiedAt,
+    };
+  }
+
   async createVerification(userId: string): Promise<{ verificationUrl: string }> {
     const apiToken = process.env.KYCAID_API_TOKEN;
     const formId = process.env.KYCAID_FORM_ID;

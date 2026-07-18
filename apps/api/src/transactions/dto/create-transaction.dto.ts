@@ -12,7 +12,7 @@ export class CreateTransactionDto {
   walletId?: string;
 
   @ApiProperty({ format: "uuid" })
-  @IsUUID()
+  @IsString()
   merchantId!: string;
 
   @ApiPropertyOptional({ format: "uuid" })

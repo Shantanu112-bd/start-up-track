@@ -112,7 +112,13 @@ impl StarToken {
             .set(&DataKey::Authorized(admin.clone()), &true);
         env.storage()
             .persistent()
+            .extend_ttl(&DataKey::Authorized(admin.clone()), 100, 518400);
+        env.storage()
+            .persistent()
             .set(&DataKey::Minter(admin.clone()), &true);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Minter(admin.clone()), 100, 518400);
 
         StarEvent {
             action: symbol_short!("init"),
@@ -141,7 +147,13 @@ impl StarToken {
             .set(&DataKey::Authorized(new_admin.clone()), &true);
         env.storage()
             .persistent()
+            .extend_ttl(&DataKey::Authorized(new_admin.clone()), 100, 518400);
+        env.storage()
+            .persistent()
             .set(&DataKey::Minter(new_admin.clone()), &true);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Minter(new_admin.clone()), 100, 518400);
         StarEvent {
             action: symbol_short!("admin"),
             account: admin,
@@ -276,10 +288,16 @@ impl StarToken {
         env.storage()
             .persistent()
             .set(&DataKey::Minter(minter.clone()), &enabled);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Minter(minter.clone()), 100, 518400);
         if enabled {
             env.storage()
                 .persistent()
                 .set(&DataKey::Authorized(minter.clone()), &true);
+            env.storage()
+                .persistent()
+                .extend_ttl(&DataKey::Authorized(minter.clone()), 100, 518400);
         }
         StarEvent {
             action: symbol_short!("minter"),
@@ -304,6 +322,9 @@ impl StarToken {
         env.storage()
             .persistent()
             .set(&DataKey::Authorized(id.clone()), &authorize);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Authorized(id.clone()), 100, 518400);
         StarEvent {
             action: symbol_short!("auth"),
             account: id.clone(),
@@ -418,6 +439,11 @@ impl StarToken {
                 amount,
                 expiration_ledger,
             },
+        );
+        env.storage().persistent().extend_ttl(
+            &DataKey::Allowance(from.clone(), spender.clone()),
+            100,
+            518400,
         );
         StarEvent {
             action: symbol_short!("approve"),
@@ -626,9 +652,9 @@ fn read_balance(env: &Env, id: &Address) -> i128 {
 }
 
 fn set_balance(env: &Env, id: &Address, amount: i128) {
-    env.storage()
-        .persistent()
-        .set(&DataKey::Balance(id.clone()), &amount);
+    let key = DataKey::Balance(id.clone());
+    env.storage().persistent().set(&key, &amount);
+    env.storage().persistent().extend_ttl(&key, 100, 518400);
 }
 
 fn add_balance(env: &Env, id: &Address, amount: i128) -> Result<(), StarTokenError> {
@@ -716,6 +742,11 @@ fn spend_allowance(
             amount: allowance.amount - amount,
             expiration_ledger: allowance.expiration_ledger,
         },
+    );
+    env.storage().persistent().extend_ttl(
+        &DataKey::Allowance(from.clone(), spender.clone()),
+        100,
+        518400,
     );
     Ok(())
 }

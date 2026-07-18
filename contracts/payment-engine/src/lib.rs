@@ -142,6 +142,9 @@ impl PaymentEngine {
         env.storage()
             .persistent()
             .set(&DataKey::Operator(admin.clone()), &true);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Operator(admin.clone()), 100, 518400);
         PaymentConfigEvent {
             action: symbol_short!("init"),
             account: admin.clone(),
@@ -219,6 +222,9 @@ impl PaymentEngine {
         env.storage()
             .persistent()
             .set(&DataKey::Operator(operator.clone()), &enabled);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Operator(operator.clone()), 100, 518400);
         PaymentConfigEvent {
             action: symbol_short!("operator"),
             account: operator.clone(),
@@ -255,6 +261,7 @@ impl PaymentEngine {
 
     pub fn create_payment(
         env: Env,
+        operator: Address,
         payer: Address,
         payment_id: BytesN<32>,
         merchant_id: BytesN<32>,
@@ -267,7 +274,7 @@ impl PaymentEngine {
         if amount_in_paise <= 0 {
             return Err(PaymentEngineError::InvalidAmount);
         }
-        payer.require_auth();
+        require_operator(&env, &operator)?;
         if has_payment(&env, &payment_id) {
             return Err(PaymentEngineError::PaymentAlreadyExists);
         }
@@ -576,9 +583,9 @@ fn read_payment(env: &Env, payment_id: &BytesN<32>) -> Result<PaymentRecord, Pay
 }
 
 fn write_payment(env: &Env, payment: &PaymentRecord) {
-    env.storage()
-        .persistent()
-        .set(&DataKey::Payment(payment.payment_id.clone()), payment);
+    let key = DataKey::Payment(payment.payment_id.clone());
+    env.storage().persistent().set(&key, payment);
+    env.storage().persistent().extend_ttl(&key, 100, 518400);
 }
 
 fn touch_and_write(env: &Env, payment: &mut PaymentRecord) {
@@ -700,6 +707,7 @@ mod test {
         let reward_id = bytes(&env, 3);
 
         client.create_payment(
+            &operator,
             &payer,
             &payment_id,
             &merchant_id,
@@ -722,11 +730,12 @@ mod test {
 
     #[test]
     fn rejects_unapproved_merchant() {
-        let (env, client, registry, _admin, _operator, payer, merchant_id) = setup();
+        let (env, client, registry, _admin, operator, payer, merchant_id) = setup();
         registry.set_approved(&merchant_id, &false);
 
         assert_eq!(
             client.try_create_payment(
+                &operator,
                 &payer,
                 &bytes(&env, 2),
                 &merchant_id,
@@ -741,10 +750,11 @@ mod test {
 
     #[test]
     fn rejects_duplicate_payment_id() {
-        let (env, client, _registry, _admin, _operator, payer, merchant_id) = setup();
+        let (env, client, _registry, _admin, operator, payer, merchant_id) = setup();
         let payment_id = bytes(&env, 2);
 
         client.create_payment(
+            &operator,
             &payer,
             &payment_id,
             &merchant_id,
@@ -756,6 +766,7 @@ mod test {
 
         assert_eq!(
             client.try_create_payment(
+                &operator,
                 &payer,
                 &payment_id,
                 &merchant_id,
@@ -774,6 +785,7 @@ mod test {
         let payment_id = bytes(&env, 2);
 
         client.create_payment(
+            &operator,
             &payer,
             &payment_id,
             &merchant_id,
@@ -791,10 +803,11 @@ mod test {
 
     #[test]
     fn payer_can_cancel_before_conversion() {
-        let (env, client, _registry, _admin, _operator, payer, merchant_id) = setup();
+        let (env, client, _registry, _admin, operator, payer, merchant_id) = setup();
         let payment_id = bytes(&env, 2);
 
         client.create_payment(
+            &operator,
             &payer,
             &payment_id,
             &merchant_id,
@@ -852,6 +865,7 @@ mod test {
         registry.approve_merchant(&merchant_id);
 
         payment.create_payment(
+            &operator,
             &payer,
             &chain_payment_id,
             &merchant_id,

@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Headers, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, Get, Headers, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags, ApiBearerAuth } from "@nestjs/swagger";
 import * as crypto from "crypto";
 
@@ -36,6 +36,14 @@ export class KycController {
     }
 
     return this.kycService.processWebhook(payload);
+  }
+
+  @Get("status")
+  @UseGuards(JwtAuthGuard)
+  @ApiMockAuth()
+  @ApiOperation({ summary: "Get current user KYC status" })
+  async getStatus(@CurrentUser() user: AuthenticatedPrincipal) {
+    return this.kycService.getStatus(user.id);
   }
 
   @Post("start")

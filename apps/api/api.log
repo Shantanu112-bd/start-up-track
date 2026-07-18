@@ -4990,3 +4990,310 @@ Node.js v22.23.1
     at async Promise.all (index 3)
     at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
     at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:48:22 am [tsx] change in ./src\stellar\soroban.service.ts Rerunning...
+c[32m[Nest] 24892  - [39m18/07/2026, 2:48:57 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 24892  - [39m18/07/2026, 2:48:57 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 24892  - [39m18/07/2026, 2:48:57 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 24892  - [39m18/07/2026, 2:48:57 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 24892  - [39m18/07/2026, 2:48:57 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 24892  - [39m18/07/2026, 2:48:57 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 24892  - [39m18/07/2026, 2:48:57 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 24892  - [39m18/07/2026, 2:48:57 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:49:55 am [tsx] change in ./src\generated\prisma\index.js Rerunning...
+c2:49:56 am [tsx] change in ./src\generated\prisma\runtime\client.js Restarting...
+c2:49:56 am [tsx] change in ./src\generated\prisma\query_compiler_fast_bg.wasm-base64.js Restarting...
+c[32m[Nest] 15420  - [39m18/07/2026, 2:50:01 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 15420  - [39m18/07/2026, 2:50:01 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 15420  - [39m18/07/2026, 2:50:01 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +6ms[39m
+[32m[Nest] 15420  - [39m18/07/2026, 2:50:01 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15420  - [39m18/07/2026, 2:50:01 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15420  - [39m18/07/2026, 2:50:01 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 15420  - [39m18/07/2026, 2:50:01 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 15420  - [39m18/07/2026, 2:50:01 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:51:04 am [tsx] change in ./src\generated\prisma\query_compiler_fast_bg.wasm-base64.js Rerunning...
+c[32m[Nest] 35316  - [39m18/07/2026, 2:51:09 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 35316  - [39m18/07/2026, 2:51:10 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 35316  - [39m18/07/2026, 2:51:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +8ms[39m
+[32m[Nest] 35316  - [39m18/07/2026, 2:51:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 35316  - [39m18/07/2026, 2:51:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 35316  - [39m18/07/2026, 2:51:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 35316  - [39m18/07/2026, 2:51:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +1ms[39m
+[31m[Nest] 35316  - [39m18/07/2026, 2:51:10 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:51:39 am [tsx] change in ./src\transaction-processor\transaction-processor.service.ts Rerunning...
+c[32m[Nest] 18196  - [39m18/07/2026, 2:51:43 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 18196  - [39m18/07/2026, 2:51:43 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 18196  - [39m18/07/2026, 2:51:43 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +6ms[39m
+[32m[Nest] 18196  - [39m18/07/2026, 2:51:43 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18196  - [39m18/07/2026, 2:51:43 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18196  - [39m18/07/2026, 2:51:43 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18196  - [39m18/07/2026, 2:51:43 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 18196  - [39m18/07/2026, 2:51:43 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:52:00 am [tsx] change in ./src\generated\prisma\query_compiler_fast_bg.wasm-base64.js Rerunning...
+c[32m[Nest] 36164  - [39m18/07/2026, 2:52:05 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 36164  - [39m18/07/2026, 2:52:05 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 36164  - [39m18/07/2026, 2:52:05 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +7ms[39m
+[32m[Nest] 36164  - [39m18/07/2026, 2:52:05 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 36164  - [39m18/07/2026, 2:52:05 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 36164  - [39m18/07/2026, 2:52:05 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 36164  - [39m18/07/2026, 2:52:05 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 36164  - [39m18/07/2026, 2:52:05 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:52:33 am [tsx] change in ./src\transaction-processor\transaction-processor.service.ts Rerunning...
+c[32m[Nest] 36320  - [39m18/07/2026, 2:52:37 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 36320  - [39m18/07/2026, 2:52:37 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 36320  - [39m18/07/2026, 2:52:37 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 36320  - [39m18/07/2026, 2:52:37 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 36320  - [39m18/07/2026, 2:52:37 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 36320  - [39m18/07/2026, 2:52:37 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 36320  - [39m18/07/2026, 2:52:37 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 36320  - [39m18/07/2026, 2:52:37 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:52:57 am [tsx] change in ./src\transaction-processor\transaction-processor.service.ts Rerunning...
+c[32m[Nest] 26996  - [39m18/07/2026, 2:53:02 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 26996  - [39m18/07/2026, 2:53:02 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 26996  - [39m18/07/2026, 2:53:02 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +6ms[39m
+[32m[Nest] 26996  - [39m18/07/2026, 2:53:02 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 26996  - [39m18/07/2026, 2:53:02 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26996  - [39m18/07/2026, 2:53:02 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26996  - [39m18/07/2026, 2:53:02 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 26996  - [39m18/07/2026, 2:53:02 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:53:04 am [tsx] change in ./src\generated\prisma\query_compiler_fast_bg.wasm-base64.js Rerunning...
+c[32m[Nest] 21736  - [39m18/07/2026, 2:53:10 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 21736  - [39m18/07/2026, 2:53:10 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 21736  - [39m18/07/2026, 2:53:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +8ms[39m
+[32m[Nest] 21736  - [39m18/07/2026, 2:53:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 21736  - [39m18/07/2026, 2:53:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21736  - [39m18/07/2026, 2:53:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21736  - [39m18/07/2026, 2:53:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 21736  - [39m18/07/2026, 2:53:10 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:55:04 am [tsx] change in ./src\transaction-processor\transaction-processor.service.ts Rerunning...
+c[32m[Nest] 8896  - [39m18/07/2026, 2:55:10 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 8896  - [39m18/07/2026, 2:55:10 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 8896  - [39m18/07/2026, 2:55:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +9ms[39m
+[32m[Nest] 8896  - [39m18/07/2026, 2:55:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 8896  - [39m18/07/2026, 2:55:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 8896  - [39m18/07/2026, 2:55:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 8896  - [39m18/07/2026, 2:55:10 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +1ms[39m
+[31m[Nest] 8896  - [39m18/07/2026, 2:55:10 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:55:17 am [tsx] change in ./src\transaction-processor\transaction-processor.service.ts Rerunning...
+c[32m[Nest] 5332  - [39m18/07/2026, 2:55:23 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 5332  - [39m18/07/2026, 2:55:23 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 5332  - [39m18/07/2026, 2:55:23 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +10ms[39m
+[32m[Nest] 5332  - [39m18/07/2026, 2:55:23 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 5332  - [39m18/07/2026, 2:55:23 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 5332  - [39m18/07/2026, 2:55:23 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 5332  - [39m18/07/2026, 2:55:23 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 5332  - [39m18/07/2026, 2:55:23 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:55:24 am [tsx] change in ./src\generated\prisma\query_compiler_fast_bg.wasm-base64.js Rerunning...
+c[32m[Nest] 37696  - [39m18/07/2026, 2:55:33 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 37696  - [39m18/07/2026, 2:55:33 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 37696  - [39m18/07/2026, 2:55:33 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +10ms[39m
+[32m[Nest] 37696  - [39m18/07/2026, 2:55:33 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 37696  - [39m18/07/2026, 2:55:33 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 37696  - [39m18/07/2026, 2:55:33 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 37696  - [39m18/07/2026, 2:55:33 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 37696  - [39m18/07/2026, 2:55:33 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+2:55:50 am [tsx] change in ./src\generated\prisma\query_compiler_fast_bg.wasm-base64.js Rerunning...
+c[32m[Nest] 30916  - [39m18/07/2026, 2:55:58 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 30916  - [39m18/07/2026, 2:55:58 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 30916  - [39m18/07/2026, 2:55:58 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +8ms[39m
+[32m[Nest] 30916  - [39m18/07/2026, 2:55:58 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 30916  - [39m18/07/2026, 2:55:58 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30916  - [39m18/07/2026, 2:55:58 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 30916  - [39m18/07/2026, 2:55:58 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 30916  - [39m18/07/2026, 2:55:58 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+3:06:39 am [tsx] change in ./src\generated\prisma\query_compiler_fast_bg.wasm-base64.js Rerunning...
+c[32m[Nest] 29400  - [39m18/07/2026, 3:06:45 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 29400  - [39m18/07/2026, 3:06:45 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 29400  - [39m18/07/2026, 3:06:45 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +7ms[39m
+[32m[Nest] 29400  - [39m18/07/2026, 3:06:45 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 29400  - [39m18/07/2026, 3:06:45 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 29400  - [39m18/07/2026, 3:06:45 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 29400  - [39m18/07/2026, 3:06:45 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 29400  - [39m18/07/2026, 3:06:45 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+3:07:21 am [tsx] change in ./src\app.module.ts Rerunning...
+c[32m[Nest] 1728  - [39m18/07/2026, 3:07:25 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 1728  - [39m18/07/2026, 3:07:25 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 1728  - [39m18/07/2026, 3:07:25 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 1728  - [39m18/07/2026, 3:07:25 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1728  - [39m18/07/2026, 3:07:25 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1728  - [39m18/07/2026, 3:07:25 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1728  - [39m18/07/2026, 3:07:25 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 1728  - [39m18/07/2026, 3:07:25 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+3:07:30 am [tsx] change in ./src\app.module.ts Rerunning...
+c3:07:38 am [tsx] change in ./src\generated\prisma\query_compiler_fast_bg.wasm-base64.js Restarting...
+c[32m[Nest] 37848  - [39m18/07/2026, 3:07:44 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 37848  - [39m18/07/2026, 3:07:44 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 37848  - [39m18/07/2026, 3:07:44 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +7ms[39m
+[32m[Nest] 37848  - [39m18/07/2026, 3:07:44 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 37848  - [39m18/07/2026, 3:07:44 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 37848  - [39m18/07/2026, 3:07:44 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 37848  - [39m18/07/2026, 3:07:44 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 37848  - [39m18/07/2026, 3:07:44 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13
+3:09:42 am [tsx] change in ./src\generated\prisma\query_compiler_fast_bg.js Rerunning...
+c[32m[Nest] 22356  - [39m18/07/2026, 3:09:46 am [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[33m[Nest] 22356  - [39m18/07/2026, 3:09:46 am [33m   WARN[39m [38;5;3m[SettlementService] [39m[33mDecentro credentials not configured. UPI payouts will use mock mode.[39m
+[32m[Nest] 22356  - [39m18/07/2026, 3:09:46 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +6ms[39m
+[32m[Nest] 22356  - [39m18/07/2026, 3:09:46 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 22356  - [39m18/07/2026, 3:09:46 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTransactionProcessorModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 22356  - [39m18/07/2026, 3:09:46 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSettlementModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 22356  - [39m18/07/2026, 3:09:46 am [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCircuitBreakerModule dependencies initialized[39m[38;5;3m +0ms[39m
+[31m[Nest] 22356  - [39m18/07/2026, 3:09:46 am [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mTypeError: Cannot read properties of undefined (reading 'get')
+    at new AmlService [90m(C:\Users\khush\OneDrive\Desktop\stellar\apps\api\[39msrc\aml\aml.service.ts:48:34[90m)[39m
+    at Injector.instantiateClass (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:430:19)
+    at callback (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:72:45)
+    at async Injector.resolveConstructorParams (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:180:24)
+    at async Injector.loadInstance (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:77:13)
+    at async Injector.loadProvider (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\injector.js:111:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:55:9)
+    at async C:\Users\khush\OneDrive\Desktop\stellar\node_modules\[4m@nestjs\core[24m\injector\instance-loader.js:40:13

@@ -366,9 +366,9 @@ fn read_merchant(
 }
 
 fn write_merchant(env: &Env, record: &MerchantRecord) {
-    env.storage()
-        .persistent()
-        .set(&DataKey::Merchant(record.merchant_id.clone()), record);
+    let key = DataKey::Merchant(record.merchant_id.clone());
+    env.storage().persistent().set(&key, record);
+    env.storage().persistent().extend_ttl(&key, 100, 518400);
 }
 
 #[cfg(test)]

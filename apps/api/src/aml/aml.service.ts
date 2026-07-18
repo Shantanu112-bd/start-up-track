@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 
 export interface AmlScreeningResult {
   address: string;
@@ -43,16 +42,16 @@ export class AmlService {
   private readonly trmConfig: TRMConfig;
   private readonly defaultProvider: 'chainalysis' | 'trm' | 'mock';
 
-  constructor(private readonly configService: ConfigService) {
+  constructor() {
     this.chainalysisConfig = {
-      apiKey: this.configService.get<string>('CHAINALYSIS_API_KEY') || '',
-      baseUrl: this.configService.get<string>('CHAINALYSIS_BASE_URL') || 'https://api.chainalysis.com',
+      apiKey: process.env.CHAINALYSIS_API_KEY || '',
+      baseUrl: process.env.CHAINALYSIS_BASE_URL || 'https://api.chainalysis.com',
     };
     this.trmConfig = {
-      apiKey: this.configService.get<string>('TRM_API_KEY') || '',
-      baseUrl: this.configService.get<string>('TRM_BASE_URL') || 'https://api.trmlabs.com',
+      apiKey: process.env.TRM_API_KEY || '',
+      baseUrl: process.env.TRM_BASE_URL || 'https://api.trmlabs.com',
     };
-    this.defaultProvider = this.configService.get<('chainalysis' | 'trm' | 'mock')>('AML_PROVIDER') || 'mock';
+    this.defaultProvider = (process.env.AML_PROVIDER as 'chainalysis' | 'trm' | 'mock') || 'mock';
   }
 
   /**

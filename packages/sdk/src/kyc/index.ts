@@ -7,7 +7,7 @@ export class KycClient {
     return this.client.post('/kyc/start', {});
   }
 
-  async getStatus(): Promise<{ kycStatus: string }> {
+  async getStatus(): Promise<{ kycStatus: string; kycReference: string | null; kycVerifiedAt: string | null }> {
     return this.client.get('/kyc/status');
   }
 }

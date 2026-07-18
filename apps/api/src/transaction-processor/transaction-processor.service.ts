@@ -82,6 +82,11 @@ export class TransactionProcessorService {
   private async processTransaction(tx: any, attempt: number) {
     this.logger.log(`Processing transaction ${tx.id} with status ${tx.status}`);
 
+    // Declare variables at function scope for catch block access
+    let hash: string | undefined;
+    let ledger: number | undefined;
+    let rewardResult: { hash: string; starAmount: bigint } | undefined;
+
     try {
       // Step 1: Create payment on PaymentEngine contract
       await this.updateStatus(tx.id, TransactionStatus.AUTHORIZED);
@@ -139,11 +144,13 @@ export class TransactionProcessorService {
       await this.updateStatus(tx.id, TransactionStatus.ROUTING_STELLAR);
 
       // Step 4: Submit real Stellar payment
-      const { hash, ledger } = await this.stellarService.submitPayment({
+      const stellarResult = await this.stellarService.submitPayment({
         transactionPublicId: tx.publicId,
         assetCode: tx.assetIn,
         amountCrypto: tx.amountInCrypto?.toString() || '0.0000001',
       });
+      hash = stellarResult.hash;
+      ledger = stellarResult.ledger;
 
       await this.prisma.transaction.update({
         where: { id: tx.id },
@@ -184,43 +191,13 @@ export class TransactionProcessorService {
           },
         });
 
-        // Poll for settlement completion
-        let settlementStatus = settlementResult.status;
-        let attempts = 0;
-        const maxAttempts = 30; // 5 minutes max
-        let finalUtrNumber: string | undefined;
-        while (settlementStatus === 'PROCESSING' || settlementStatus === 'PENDING') {
-          await new Promise(resolve => setTimeout(resolve, 10000)); // 10s polling
-          const statusResult = await this.settlementService.checkPayoutStatus(settlementResult.transactionId);
-          settlementStatus = statusResult.status;
-          finalUtrNumber = statusResult.utrNumber;
-          attempts++;
-          if (attempts >= maxAttempts) {
-            this.logger.warn(`Settlement ${settlementResult.transactionId} timed out after ${maxAttempts} attempts`);
-            break;
-          }
-        }
-
-        if (settlementStatus === 'SUCCESS' || settlementStatus === 'COMPLETED') {
-          await this.prisma.settlementInstruction.updateMany({
-            where: { transactionId: tx.id },
-            data: {
-              status: 'CONFIRMED',
-              confirmedAt: new Date(),
-              mockReference: settlementResult.transactionId,
-              metadata: { utrNumber: finalUtrNumber, settlementStatus },
-            },
-          });
-          this.logger.log(`UPI settlement confirmed: ${settlementResult.transactionId}, UTR: ${finalUtrNumber}`);
-        } else {
-          this.logger.warn(`UPI settlement status: ${settlementStatus} for ${settlementResult.transactionId}`);
-        }
+        this.logger.log(`UPI payout initiated: ${settlementResult.transactionId}, status: ${settlementResult.status}. Settlement will be confirmed by background poller.`);
       } else {
         this.logger.warn(`Merchant ${tx.merchantId} has no UPI VPA, skipping UPI settlement`);
       }
 
       // Step 6: Issue STAR reward via RewardEngine (called by PaymentEngine.issue_reward)
-      const rewardResult = await this.sorobanService.issueReward(tx.id);
+      rewardResult = await this.sorobanService.issueReward(tx.id);
 
       // Update reward record with on-chain mint hash
       await this.prisma.reward.updateMany({
@@ -247,24 +224,35 @@ export class TransactionProcessorService {
         },
       });
 
-      await this.prisma.adminLog.create({
-        data: {
-          actorUserId: null,
-          action: 'TRANSACTION_COMPLETED',
-          targetType: 'TRANSACTION',
-          targetId: tx.id,
-          metadata: {
-            stellarHash: hash,
-            ledger,
-            processorAttempt: attempt,
-            starAmount: rewardResult.starAmount.toString(),
+      // Only log adminLog if hash and rewardResult are defined (success path)
+      if (hash && ledger !== undefined && rewardResult) {
+        await this.prisma.adminLog.create({
+          data: {
+            actorUserId: null,
+            action: 'TRANSACTION_COMPLETED',
+            targetType: 'TRANSACTION',
+            targetId: tx.id,
+            metadata: {
+              stellarHash: hash,
+              ledger,
+              processorAttempt: attempt,
+              starAmount: rewardResult.starAmount.toString(),
+            },
           },
-        },
-      })
+        })
 
-      this.logger.log(`Transaction ${tx.id} completed successfully. Stellar Hash: ${hash}, STAR earned: ${rewardResult.starAmount}`);
+        this.logger.log(`Transaction ${tx.id} completed successfully. Stellar Hash: ${hash}, STAR earned: ${rewardResult.starAmount}`);
+      }
 
     } catch (error: any) {
+      // Only use hash if it was set before the error
+      if (hash) {
+        // Transaction reached Stellar submission but failed later - hash exists
+        await this.prisma.transaction.update({
+          where: { id: tx.id },
+          data: { stellarTransactionHash: hash },
+        }).catch(() => {});
+      }
       await this.updateStatus(
         tx.id,
         TransactionStatus.FAILED,
@@ -320,5 +308,75 @@ export class TransactionProcessorService {
         payload: payload || {},
       },
     });
+  }
+
+  /**
+   * Background cron job to poll for pending UPI settlements
+   * Runs every 30 seconds to check Decentro status for SENT settlements
+   */
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handlePendingSettlements(): Promise<void> {
+    this.logger.debug('Polling for pending UPI settlements...');
+
+    // Find all SENT settlements that are not yet confirmed/failed
+    const pendingSettlements = await this.prisma.settlementInstruction.findMany({
+      where: {
+        status: 'SENT',
+        settlementReference: { not: null },
+      },
+      take: 20,
+    });
+
+    if (pendingSettlements.length === 0) {
+      return;
+    }
+
+    this.logger.log(`Found ${pendingSettlements.length} pending settlements to poll`);
+
+    for (const settlement of pendingSettlements) {
+      try {
+        const statusResult = await this.settlementService.checkPayoutStatus(settlement.settlementReference!);
+
+        if (statusResult.status === 'SUCCESS' || statusResult.status === 'COMPLETED') {
+          await this.prisma.settlementInstruction.update({
+            where: { id: settlement.id },
+            data: {
+              status: 'CONFIRMED',
+              confirmedAt: new Date(),
+              mockReference: settlement.settlementReference,
+              metadata: {
+                ...(settlement.metadata as object),
+                utrNumber: statusResult.utrNumber,
+                settlementStatus: statusResult.status
+              },
+            },
+          });
+          this.logger.log(`UPI settlement confirmed: ${settlement.settlementReference}, UTR: ${statusResult.utrNumber}`);
+        } else if (statusResult.status === 'FAILED' || statusResult.status === 'REJECTED') {
+          await this.prisma.settlementInstruction.update({
+            where: { id: settlement.id },
+            data: {
+              status: 'FAILED',
+              failureReason: `Decentro status: ${statusResult.status}`,
+            },
+          });
+          this.logger.warn(`UPI settlement failed: ${settlement.settlementReference}, status: ${statusResult.status}`);
+        } else {
+          // Still processing - update metadata with latest status
+          await this.prisma.settlementInstruction.update({
+            where: { id: settlement.id },
+            data: {
+              metadata: {
+                ...(settlement.metadata as object),
+                settlementStatus: statusResult.status,
+                lastPolledAt: new Date().toISOString(),
+              },
+            },
+          });
+        }
+      } catch (error: any) {
+        this.logger.error(`Failed to poll settlement ${settlement.settlementReference}: ${error.message}`);
+      }
+    }
   }
 }

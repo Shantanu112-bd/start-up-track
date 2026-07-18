@@ -1,5 +1,6 @@
 import "dotenv/config";
 import "reflect-metadata";
+import { Keypair } from "@stellar/stellar-sdk";
 
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
@@ -10,7 +11,20 @@ import { AppModule } from "./app.module";
 import { PrismaExceptionFilter } from "./common/filters/prisma-exception.filter";
 import { JsonSerializationInterceptor } from "./common/interceptors/json-serialization.interceptor";
 
+function validatePlatformStellarSecret(): void {
+  const secret = process.env.PLATFORM_STELLAR_SECRET_KEY;
+  if (!secret) {
+    throw new Error('PLATFORM_STELLAR_SECRET_KEY is not set. Set a valid Stellar secret key (starts with "S...") in environment variables. Required for SEP-10 authentication and signing transaction challenges.')
+  }
+  try {
+    Keypair.fromSecret(secret);
+  } catch (e) {
+    throw new Error(`PLATFORM_STELLAR_SECRET_KEY is malformed: ${e instanceof Error ? e.message : 'invalid format'}. Must be a valid Stellar secret key starting with "S".`)
+  }
+}
+
 async function bootstrap() {
+  validatePlatformStellarSecret();
   const app = await NestFactory.create(AppModule);
   app.useLogger(app.get(Logger));
   const allowedOrigins = process.env.ALLOWED_ORIGINS

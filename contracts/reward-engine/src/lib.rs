@@ -105,6 +105,9 @@ impl RewardEngine {
         env.storage()
             .persistent()
             .set(&DataKey::AuthorizedIssuer(admin.clone()), &true);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::AuthorizedIssuer(admin.clone()), 100, 518400);
         RewardConfigEvent {
             action: symbol_short!("init"),
             account: admin.clone(),
@@ -128,6 +131,9 @@ impl RewardEngine {
         env.storage()
             .persistent()
             .set(&DataKey::AuthorizedIssuer(new_admin.clone()), &true);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::AuthorizedIssuer(new_admin.clone()), 100, 518400);
         RewardConfigEvent {
             action: symbol_short!("admin"),
             account: admin,
@@ -195,6 +201,9 @@ impl RewardEngine {
         env.storage()
             .persistent()
             .set(&DataKey::AuthorizedIssuer(issuer.clone()), &enabled);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::AuthorizedIssuer(issuer.clone()), 100, 518400);
         RewardConfigEvent {
             action: symbol_short!("issuer"),
             account: issuer.clone(),
@@ -321,6 +330,9 @@ fn issue_reward(
     env.storage()
         .persistent()
         .set(&DataKey::Reward(reward_id.clone()), &record);
+    env.storage()
+        .persistent()
+        .extend_ttl(&DataKey::Reward(reward_id.clone()), 100, 518400);
     RewardIssuedEvent {
         reward_id,
         recipient: record.recipient,

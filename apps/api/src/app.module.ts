@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
-import { APP_GUARD } from "@nestjs/core";
+import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { LoggerModule } from 'nestjs-pino';
 import * as crypto from 'crypto';
 
@@ -23,9 +24,11 @@ import { StellarModule } from './stellar/stellar.module';
 import { TransactionProcessorModule } from './transaction-processor/transaction-processor.module';
 import { CircuitBreakerModule } from './common/circuit-breaker/circuit-breaker.module';
 import { RampsModule } from './ramps/ramps.module';
+import { PaginationInterceptor } from './common/interceptors/pagination.interceptor';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     LoggerModule.forRoot({
       pinoHttp: {
         genReqId: (req: any) => (req.headers['x-request-id'] as string) || crypto.randomUUID(),
@@ -66,6 +69,10 @@ import { RampsModule } from './ramps/ramps.module';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PaginationInterceptor,
     },
   ],
 })
