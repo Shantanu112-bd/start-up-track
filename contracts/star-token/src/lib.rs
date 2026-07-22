@@ -27,6 +27,7 @@ pub enum StarTokenError {
     SupplyCapExceeded = 7,
     Paused = 8,
     AccountNotAuthorized = 9,
+    NoPendingAdmin = 10,
 }
 
 #[contracttype]
@@ -69,6 +70,7 @@ enum DataKey {
     Metadata,
     Minter(Address),
     Paused,
+    PendingAdmin,
     TotalSupply,
     FeeBurnConfig,
 }
@@ -151,36 +153,61 @@ impl StarToken {
         require_not_paused(&env)?;
         let admin = read_admin(&env);
         admin.require_auth();
-
-        // Revoke the OUTGOING admin's privileged flags so a rotated-out key can
-        // no longer mint or move funds while frozen. Skip when rotating to self
-        // (would otherwise lock the admin out of its own powers).
-        if admin != new_admin {
-            env.storage()
-                .persistent()
-                .set(&DataKey::Minter(admin.clone()), &false);
-            env.storage()
-                .persistent()
-                .set(&DataKey::Authorized(admin.clone()), &false);
-        }
-
-        env.storage().instance().set(&DataKey::Admin, &new_admin);
         env.storage()
-            .persistent()
-            .set(&DataKey::Authorized(new_admin.clone()), &true);
-        env.storage()
-            .persistent()
-            .extend_ttl(&DataKey::Authorized(new_admin.clone()), 100, 518400);
-        env.storage()
-            .persistent()
-            .set(&DataKey::Minter(new_admin.clone()), &true);
-        env.storage()
-            .persistent()
-            .extend_ttl(&DataKey::Minter(new_admin.clone()), 100, 518400);
+            .instance()
+            .set(&DataKey::PendingAdmin, &new_admin);
         StarEvent {
-            action: symbol_short!("admin"),
+            action: symbol_short!("adm_prop"),
             account: admin,
             counterparty: new_admin,
+            amount: 0,
+            flag: true,
+        }
+        .publish(&env);
+        Ok(())
+    }
+
+    /// Second step of the two-step admin handoff: the proposed admin claims the
+    /// role by authorizing itself, then the OUTGOING admin's mint/authorized
+    /// flags are revoked (T1.1) so a rotated-out key can no longer mint or move
+    /// funds. Skip revocation on self-rotation.
+    pub fn accept_admin(env: Env) -> Result<(), StarTokenError> {
+        require_not_paused(&env)?;
+        let pending: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::PendingAdmin)
+            .ok_or(StarTokenError::NoPendingAdmin)?;
+        pending.require_auth();
+        let old_admin = read_admin(&env);
+
+        if old_admin != pending {
+            env.storage()
+                .persistent()
+                .set(&DataKey::Minter(old_admin.clone()), &false);
+            env.storage()
+                .persistent()
+                .set(&DataKey::Authorized(old_admin.clone()), &false);
+        }
+
+        env.storage().instance().set(&DataKey::Admin, &pending);
+        env.storage().instance().remove(&DataKey::PendingAdmin);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Authorized(pending.clone()), &true);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Authorized(pending.clone()), 100, 518400);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Minter(pending.clone()), &true);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Minter(pending.clone()), 100, 518400);
+        StarEvent {
+            action: symbol_short!("admin"),
+            account: old_admin,
+            counterparty: pending,
             amount: 0,
             flag: true,
         }
@@ -714,7 +741,12 @@ fn sub_balance(env: &Env, id: &Address, amount: i128) -> Result<(), StarTokenErr
     if current < amount {
         return Err(StarTokenError::InsufficientBalance);
     }
-    set_balance(env, id, current - amount);
+    // T4.2: checked_sub as defense-in-depth even though the guard above already
+    // proves current >= amount.
+    let next = current
+        .checked_sub(amount)
+        .ok_or(StarTokenError::InsufficientBalance)?;
+    set_balance(env, id, next);
     Ok(())
 }
 
@@ -783,11 +815,16 @@ fn spend_allowance(
         return Err(StarTokenError::InsufficientAllowance);
     }
 
+    // T4.2: checked_sub as defense-in-depth (guard above proves amount fits).
+    let next_amount = allowance
+        .amount
+        .checked_sub(amount)
+        .ok_or(StarTokenError::InsufficientAllowance)?;
     let key = DataKey::Allowance(from.clone(), spender.clone());
     env.storage().persistent().set(
         &key,
         &AllowanceValue {
-            amount: allowance.amount - amount,
+            amount: next_amount,
             expiration_ledger: allowance.expiration_ledger,
         },
     );
@@ -904,9 +941,10 @@ mod test {
 
     // ── TIER 1 ──────────────────────────────────────────────────────────────
 
-    // T1.1: after admin rotation the OLD admin must lose mint power. Before the
-    // fix, Minter(old)=true persisted and the old key could still mint via
-    // mint_from_minter — a privilege-escalation. This test fails pre-fix.
+    // T1.1 + T4.1: after a two-step admin rotation the OLD admin must lose mint
+    // power. Before the T1.1 fix, Minter(old)=true persisted and the old key
+    // could still mint via mint_from_minter — a privilege-escalation. Revocation
+    // now happens on accept_admin, not on the propose step.
     #[test]
     fn set_admin_revokes_old_admin_mint_power() {
         let (env, client, admin, alice, _bob) = setup();
@@ -915,7 +953,12 @@ mod test {
         // sanity: old admin can mint before rotation
         client.mint_from_minter(&admin, &alice, &10);
 
+        // T4.1: proposing alone must NOT revoke the old admin's power yet.
         client.set_admin(&new_admin);
+        assert!(client.is_minter(&admin));
+
+        client.accept_admin();
+        assert_eq!(client.admin(), new_admin);
 
         // new admin has mint power
         client.mint_from_minter(&new_admin, &alice, &10);
@@ -928,13 +971,24 @@ mod test {
         );
     }
 
-    // T1.1 companion: rotating to self must not lock the admin out.
+    // T1.1 companion / T4.1: rotating to self must not lock the admin out.
     #[test]
     fn set_admin_to_self_keeps_powers() {
         let (_env, client, admin, alice, _bob) = setup();
         client.set_admin(&admin);
+        client.accept_admin();
         assert!(client.is_minter(&admin));
         client.mint_from_minter(&admin, &alice, &5);
+    }
+
+    // T4.1: accept_admin with no proposal outstanding is rejected.
+    #[test]
+    fn accept_admin_without_proposal_fails() {
+        let (_env, client, _admin, _alice, _bob) = setup();
+        assert_eq!(
+            client.try_accept_admin(),
+            Err(Ok(StarTokenError::NoPendingAdmin))
+        );
     }
 
     // T1.2 (posture): default authorization is TRUE (freeze-list, not allowlist).

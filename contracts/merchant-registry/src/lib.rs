@@ -26,6 +26,7 @@ pub enum MerchantRegistryError {
     MerchantNotFound = 5,
     InvalidStatus = 6,
     Unauthorized = 7,
+    NoPendingAdmin = 8,
 }
 
 #[contracttype]
@@ -79,6 +80,7 @@ enum DataKey {
     Initialized,
     Merchant(BytesN<32>),
     Paused,
+    PendingAdmin,
 }
 
 #[contractimpl]
@@ -120,11 +122,38 @@ impl MerchantRegistry {
         require_not_paused(&env)?;
         let admin = read_admin(&env);
         admin.require_auth();
-        env.storage().instance().set(&DataKey::Admin, &new_admin);
+        env.storage()
+            .instance()
+            .set(&DataKey::PendingAdmin, &new_admin);
         RegistryConfigEvent {
-            action: symbol_short!("admin"),
+            action: symbol_short!("adm_prop"),
             account: admin,
             counterparty: new_admin,
+            flag: true,
+        }
+        .publish(&env);
+        Ok(())
+    }
+
+    /// Second step of the two-step admin handoff: the proposed admin claims the
+    /// role by authorizing itself. This prevents handing admin to a mistyped or
+    /// uncontrolled address, since only a key that can actually sign for the
+    /// pending address can complete the transfer.
+    pub fn accept_admin(env: Env) -> Result<(), MerchantRegistryError> {
+        require_not_paused(&env)?;
+        let pending: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::PendingAdmin)
+            .ok_or(MerchantRegistryError::NoPendingAdmin)?;
+        pending.require_auth();
+        let old_admin = read_admin(&env);
+        env.storage().instance().set(&DataKey::Admin, &pending);
+        env.storage().instance().remove(&DataKey::PendingAdmin);
+        RegistryConfigEvent {
+            action: symbol_short!("admin"),
+            account: old_admin,
+            counterparty: pending,
             flag: true,
         }
         .publish(&env);
@@ -509,5 +538,32 @@ mod test {
 
         let ttl = env.as_contract(&contract_id, || env.storage().instance().get_ttl());
         assert_eq!(ttl, INSTANCE_BUMP_AMOUNT);
+    }
+
+    // T4.1: admin handoff is two-step. propose_admin (set_admin) alone must NOT
+    // transfer the role — the current admin stays until the pending admin calls
+    // accept_admin. This prevents handing admin to a mistyped/uncontrolled key.
+    #[test]
+    fn two_step_admin_handoff() {
+        let (env, client, admin, _owner, _merchant_id) = setup();
+        let new_admin = Address::generate(&env);
+
+        // Step 1: propose. Admin is unchanged until accepted.
+        client.set_admin(&new_admin);
+        assert_eq!(client.admin(), admin);
+
+        // Step 2: the pending admin accepts and becomes admin.
+        client.accept_admin();
+        assert_eq!(client.admin(), new_admin);
+    }
+
+    // T4.1: accept_admin with no proposal outstanding is rejected.
+    #[test]
+    fn accept_admin_without_proposal_fails() {
+        let (_env, client, _admin, _owner, _merchant_id) = setup();
+        assert_eq!(
+            client.try_accept_admin(),
+            Err(Ok(MerchantRegistryError::NoPendingAdmin))
+        );
     }
 }

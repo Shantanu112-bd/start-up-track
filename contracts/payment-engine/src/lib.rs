@@ -1,6 +1,20 @@
 #![cfg_attr(target_family = "wasm", no_std)]
 #![allow(clippy::too_many_arguments)]
 
+//! Payment engine.
+//!
+//! TRUST ASSUMPTION (T4.4): this contract does NOT consult an on-chain price
+//! oracle. Every economic figure — `amount_in_paise`, the crypto asset code,
+//! the off-chain FX quote and settlement amounts — is supplied by the
+//! authorized operator when it drives a payment through its lifecycle. The
+//! contract enforces authorization, merchant approval, the state machine, and
+//! idempotency; it does NOT independently verify that the quoted rate or the
+//! paise amount reflect a fair market price. Operators are trusted to quote
+//! honestly. A compromised or dishonest operator can mis-state amounts, so the
+//! operator key must be held to the same custody standard as the admin key.
+//! This is a deliberate design decision: FX and crypto pricing live off-chain
+//! in the provider-agnostic ramp layer, keeping the contract oracle-free.
+
 use soroban_sdk::{
     contract, contractclient, contracterror, contractevent, contractimpl, contracttype,
     symbol_short, Address, BytesN, Env, Symbol,
@@ -43,6 +57,7 @@ pub enum PaymentEngineError {
     PaymentAlreadyExists = 7,
     PaymentNotFound = 8,
     InvalidStatus = 9,
+    NoPendingAdmin = 10,
 }
 
 #[contracttype]
@@ -119,6 +134,7 @@ enum DataKey {
     Operator(Address),
     Paused,
     Payment(BytesN<32>),
+    PendingAdmin,
     RewardEngine,
 }
 
@@ -173,26 +189,51 @@ impl PaymentEngine {
         require_not_paused(&env)?;
         let admin = read_admin(&env);
         admin.require_auth();
-
-        // Revoke the OUTGOING admin's operator privilege so a rotated-out key can
-        // no longer create/settle/refund payments. Skip on self-rotation.
-        if admin != new_admin {
-            env.storage()
-                .persistent()
-                .set(&DataKey::Operator(admin.clone()), &false);
-        }
-
-        env.storage().instance().set(&DataKey::Admin, &new_admin);
         env.storage()
-            .persistent()
-            .set(&DataKey::Operator(new_admin.clone()), &true);
-        env.storage()
-            .persistent()
-            .extend_ttl(&DataKey::Operator(new_admin.clone()), 100, 518400);
+            .instance()
+            .set(&DataKey::PendingAdmin, &new_admin);
         PaymentConfigEvent {
-            action: symbol_short!("admin"),
+            action: symbol_short!("adm_prop"),
             account: admin,
             counterparty: new_admin,
+            flag: true,
+        }
+        .publish(&env);
+        Ok(())
+    }
+
+    /// Second step of the two-step admin handoff: the proposed admin claims the
+    /// role by authorizing itself, then the OUTGOING admin's operator privilege
+    /// is revoked (T1.1) so a rotated-out key can no longer create/settle/refund
+    /// payments. Skip revocation on self-rotation.
+    pub fn accept_admin(env: Env) -> Result<(), PaymentEngineError> {
+        require_not_paused(&env)?;
+        let pending: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::PendingAdmin)
+            .ok_or(PaymentEngineError::NoPendingAdmin)?;
+        pending.require_auth();
+        let old_admin = read_admin(&env);
+
+        if old_admin != pending {
+            env.storage()
+                .persistent()
+                .set(&DataKey::Operator(old_admin.clone()), &false);
+        }
+
+        env.storage().instance().set(&DataKey::Admin, &pending);
+        env.storage().instance().remove(&DataKey::PendingAdmin);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Operator(pending.clone()), &true);
+        env.storage()
+            .persistent()
+            .extend_ttl(&DataKey::Operator(pending.clone()), 100, 518400);
+        PaymentConfigEvent {
+            action: symbol_short!("admin"),
+            account: old_admin,
+            counterparty: pending,
             flag: true,
         }
         .publish(&env);
@@ -280,6 +321,10 @@ impl PaymentEngine {
         Ok(())
     }
 
+    /// Create a payment. `amount_in_paise` and `asset` are operator-supplied and
+    /// trusted as-is (T4.4): the contract validates authorization, merchant
+    /// approval and idempotency, but has no oracle to check the amount against a
+    /// market rate.
     pub fn create_payment(
         env: Env,
         operator: Address,
@@ -878,8 +923,9 @@ mod test {
     #[test]
     fn set_admin_revokes_old_admin_operator_power() {
         // The initial admin is granted the Operator flag at initialize().
-        // After rotating the admin away, the old admin key must no longer be
-        // able to create/settle payments (privilege-escalation regression guard).
+        // After a two-step rotation the old admin key must no longer be able to
+        // create/settle payments (privilege-escalation regression guard). T4.1:
+        // revocation happens on accept_admin, not on the propose step.
         let (env, client, _registry, admin, _operator, payer, merchant_id) = setup();
 
         // Sanity: the old admin can create a payment while still admin/operator.
@@ -895,7 +941,22 @@ mod test {
         );
 
         let new_admin = Address::generate(&env);
+
+        // T4.1: proposing alone must NOT revoke the old admin's operator power.
         client.set_admin(&new_admin);
+        client.create_payment(
+            &admin,
+            &payer,
+            &bytes(&env, 20),
+            &merchant_id,
+            &AssetCode::ETH,
+            &50_000,
+            &bytes(&env, 4),
+            &bytes(&env, 5),
+        );
+
+        client.accept_admin();
+        assert_eq!(client.admin(), new_admin);
 
         // The rotated-out admin must now be rejected as an operator.
         assert_eq!(
@@ -922,6 +983,16 @@ mod test {
             &50_000,
             &bytes(&env, 4),
             &bytes(&env, 5),
+        );
+    }
+
+    // T4.1: accept_admin with no proposal outstanding is rejected.
+    #[test]
+    fn accept_admin_without_proposal_fails() {
+        let (_env, client, _registry, _admin, _operator, _payer, _merchant_id) = setup();
+        assert_eq!(
+            client.try_accept_admin(),
+            Err(Ok(PaymentEngineError::NoPendingAdmin))
         );
     }
 
