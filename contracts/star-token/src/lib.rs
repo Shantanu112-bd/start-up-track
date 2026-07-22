@@ -141,6 +141,18 @@ impl StarToken {
         let admin = read_admin(&env);
         admin.require_auth();
 
+        // Revoke the OUTGOING admin's privileged flags so a rotated-out key can
+        // no longer mint or move funds while frozen. Skip when rotating to self
+        // (would otherwise lock the admin out of its own powers).
+        if admin != new_admin {
+            env.storage()
+                .persistent()
+                .set(&DataKey::Minter(admin.clone()), &false);
+            env.storage()
+                .persistent()
+                .set(&DataKey::Authorized(admin.clone()), &false);
+        }
+
         env.storage().instance().set(&DataKey::Admin, &new_admin);
         env.storage()
             .persistent()
@@ -620,6 +632,15 @@ fn is_minter(env: &Env, id: &Address) -> bool {
         .unwrap_or(false)
 }
 
+// DELIBERATE POSTURE (audit finding H-2): STAR uses a FREEZE-LIST (blocklist),
+// NOT an allowlist. An address is authorized by DEFAULT; `set_authorized(x,
+// false)` freezes it (blocking transfer/mint/approve for that address). This is
+// intentional for a loyalty/rewards token that is minted broadly to consumers:
+// an allowlist would require pre-authorizing every recipient before they could
+// receive STAR, which is operationally infeasible. The default therefore is
+// `true` (authorized) on purpose. To move to an allowlist posture, change this
+// to `unwrap_or(false)` and authorize accounts explicitly at init / set_minter
+// / first receipt — and expect existing holders to be frozen until authorized.
 fn is_authorized(env: &Env, id: &Address) -> bool {
     env.storage()
         .persistent()
@@ -835,6 +856,71 @@ mod test {
         assert_eq!(
             client.try_transfer(&alice, MuxedAddress::from(bob), &10),
             Err(Ok(StarTokenError::Paused))
+        );
+    }
+
+    // ── TIER 1 ──────────────────────────────────────────────────────────────
+
+    // T1.1: after admin rotation the OLD admin must lose mint power. Before the
+    // fix, Minter(old)=true persisted and the old key could still mint via
+    // mint_from_minter — a privilege-escalation. This test fails pre-fix.
+    #[test]
+    fn set_admin_revokes_old_admin_mint_power() {
+        let (env, client, admin, alice, _bob) = setup();
+        let new_admin = Address::generate(&env);
+
+        // sanity: old admin can mint before rotation
+        client.mint_from_minter(&admin, &alice, &10);
+
+        client.set_admin(&new_admin);
+
+        // new admin has mint power
+        client.mint_from_minter(&new_admin, &alice, &10);
+
+        // OLD admin must NOT: it is no longer a minter AND is frozen.
+        assert!(!client.is_minter(&admin));
+        assert_eq!(
+            client.try_mint_from_minter(&admin, &alice, &10),
+            Err(Ok(StarTokenError::AccountNotAuthorized))
+        );
+    }
+
+    // T1.1 companion: rotating to self must not lock the admin out.
+    #[test]
+    fn set_admin_to_self_keeps_powers() {
+        let (_env, client, admin, alice, _bob) = setup();
+        client.set_admin(&admin);
+        assert!(client.is_minter(&admin));
+        client.mint_from_minter(&admin, &alice, &5);
+    }
+
+    // T1.2 (posture): default authorization is TRUE (freeze-list, not allowlist).
+    #[test]
+    fn default_authorization_posture_is_true() {
+        let (env, client, _admin, _alice, _bob) = setup();
+        let never_touched = Address::generate(&env);
+        assert!(client.authorized(&never_touched));
+    }
+
+    // T1.2 (negative): a frozen address is rejected on both transfer and mint.
+    #[test]
+    fn frozen_address_rejected_on_transfer_and_mint() {
+        let (_env, client, _admin, alice, bob) = setup();
+        client.mint(&alice, &100);
+
+        // Freeze bob.
+        client.set_authorized(&bob, &false);
+        assert!(!client.authorized(&bob));
+
+        // Transfer TO a frozen address is rejected.
+        assert_eq!(
+            client.try_transfer(&alice, MuxedAddress::from(bob.clone()), &10),
+            Err(Ok(StarTokenError::AccountNotAuthorized))
+        );
+        // Mint TO a frozen address is rejected.
+        assert_eq!(
+            client.try_mint(&bob, &10),
+            Err(Ok(StarTokenError::AccountNotAuthorized))
         );
     }
 }

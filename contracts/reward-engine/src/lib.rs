@@ -127,6 +127,15 @@ impl RewardEngine {
         require_not_paused(&env)?;
         let admin = read_admin(&env);
         admin.require_auth();
+
+        // Revoke the OUTGOING admin's issuer privilege so a rotated-out key can
+        // no longer issue rewards (which mint STAR). Skip on self-rotation.
+        if admin != new_admin {
+            env.storage()
+                .persistent()
+                .set(&DataKey::AuthorizedIssuer(admin.clone()), &false);
+        }
+
         env.storage().instance().set(&DataKey::Admin, &new_admin);
         env.storage()
             .persistent()
@@ -499,6 +508,30 @@ mod test {
         assert_eq!(
             reward_client.get_reward(&bytes(&env, 1)).kind,
             RewardKind::Spend
+        );
+    }
+
+    // T1.1: after admin rotation the OLD admin must lose issuer power. The admin
+    // is an authorized issuer at init; before the fix AuthorizedIssuer(old)
+    // persisted, letting the rotated-out key keep issuing (=minting STAR).
+    #[test]
+    fn set_admin_revokes_old_admin_issuer_power() {
+        let (env, reward_client, _star_client, admin, _issuer, recipient) = setup();
+        let new_admin = Address::generate(&env);
+
+        // sanity: admin can issue before rotation
+        reward_client.issue_spend_reward(&admin, &bytes(&env, 10), &recipient, &bytes(&env, 11), &10_000);
+
+        reward_client.set_admin(&new_admin);
+
+        // new admin can issue
+        reward_client.issue_spend_reward(&new_admin, &bytes(&env, 12), &recipient, &bytes(&env, 13), &10_000);
+
+        // OLD admin must NOT be an issuer anymore
+        assert!(!reward_client.is_issuer(&admin));
+        assert_eq!(
+            reward_client.try_issue_spend_reward(&admin, &bytes(&env, 14), &recipient, &bytes(&env, 15), &10_000),
+            Err(Ok(RewardEngineError::Unauthorized))
         );
     }
 

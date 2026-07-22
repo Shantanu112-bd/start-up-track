@@ -164,6 +164,15 @@ impl PaymentEngine {
         require_not_paused(&env)?;
         let admin = read_admin(&env);
         admin.require_auth();
+
+        // Revoke the OUTGOING admin's operator privilege so a rotated-out key can
+        // no longer create/settle/refund payments. Skip on self-rotation.
+        if admin != new_admin {
+            env.storage()
+                .persistent()
+                .set(&DataKey::Operator(admin.clone()), &false);
+        }
+
         env.storage().instance().set(&DataKey::Admin, &new_admin);
         env.storage()
             .persistent()
@@ -741,7 +750,6 @@ mod test {
     fn rejects_unapproved_merchant() {
         let (env, client, registry, _admin, operator, payer, merchant_id) = setup();
         registry.set_approved(&merchant_id, &false);
-
         assert_eq!(
             client.try_create_payment(
                 &operator,
@@ -754,6 +762,56 @@ mod test {
                 &bytes(&env, 5)
             ),
             Err(Ok(PaymentEngineError::MerchantNotApproved))
+        );
+    }
+
+    #[test]
+    fn set_admin_revokes_old_admin_operator_power() {
+        // The initial admin is granted the Operator flag at initialize().
+        // After rotating the admin away, the old admin key must no longer be
+        // able to create/settle payments (privilege-escalation regression guard).
+        let (env, client, _registry, admin, _operator, payer, merchant_id) = setup();
+
+        // Sanity: the old admin can create a payment while still admin/operator.
+        client.create_payment(
+            &admin,
+            &payer,
+            &bytes(&env, 10),
+            &merchant_id,
+            &AssetCode::ETH,
+            &50_000,
+            &bytes(&env, 4),
+            &bytes(&env, 5),
+        );
+
+        let new_admin = Address::generate(&env);
+        client.set_admin(&new_admin);
+
+        // The rotated-out admin must now be rejected as an operator.
+        assert_eq!(
+            client.try_create_payment(
+                &admin,
+                &payer,
+                &bytes(&env, 11),
+                &merchant_id,
+                &AssetCode::ETH,
+                &50_000,
+                &bytes(&env, 4),
+                &bytes(&env, 5)
+            ),
+            Err(Ok(PaymentEngineError::Unauthorized))
+        );
+
+        // The new admin inherits operator power and can create payments.
+        client.create_payment(
+            &new_admin,
+            &payer,
+            &bytes(&env, 12),
+            &merchant_id,
+            &AssetCode::ETH,
+            &50_000,
+            &bytes(&env, 4),
+            &bytes(&env, 5),
         );
     }
 
